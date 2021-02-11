@@ -1,0 +1,20 @@
+$theme: #000021;
+
+body {
+    background-color: $theme;
+    color: white;
+    font-family: 'Lato', sans-serif;
+    font-weight: bold;
+}
+
+datalist {
+    option {
+
+        background-color: $theme;
+        color: white;
+    }
+}
+
+.container {
+    margin-top: 2em;
+}

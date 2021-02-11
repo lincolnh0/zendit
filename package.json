@@ -45,6 +45,7 @@
     }
   },
   "dependencies": {
+    "@octokit/core": "^3.2.5",
     "electron-squirrel-startup": "^1.0.0"
   },
   "devDependencies": {
@@ -61,6 +62,5 @@
     "gulp-sass": "^4.1.0",
     "gulp-terser": "^1.4.0",
     "pug": "^3.0.0"
-
   }
 }

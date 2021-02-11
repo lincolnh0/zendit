@@ -4,11 +4,58 @@ html(lang='en')
         meta(charset='utf-8')
         title Zendit
 
-        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous")
+        //- Bootstrap 4.6
+        link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous")
+
+        //- Bootstrap 5
+        //- link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous")
         link(rel="stylesheet", href="../css/index.css")
+        script(src="../libraries/ckeditor/ckeditor.js")
         
     body
         .container
+            form
+            datalist#branchList
+            datalist#prReviewers
+            datalist#jiraUsers
             .row
+                .col-4
+                    .form-group
+                        label(for="working-directory") Repository folder
+                        button#working-directory.btn.btn-primary.form-control Choose folder 
+                    .form-group
+                        label(for="source-branch") Base branch
+                        input#source-branch.form-control(type="text", name="source-branch" list="branchList")
+                    .form-group
+                        label(for="head-branch") Head branch
+                        input#head-branch.form-control(type="text", name="head-branch" list="branchList")
+                    .form-group
+                        label(for="reviewer") PR reviewer
+                        input#reviewer.form-control(type="text", name="reviewer" list="prReviewers")
                 .col-8
-                    h1 hello zendit
+                    .form-group
+                        label(for="pr-title") Title
+                        input#pr-title.form-control(type="text", name="pr-title")
+                    .form-group
+                        label(for="pr-description") Pull request
+                        textarea#pr-description.form-control(name="pr-description", cols="30", rows="12")
+
+            .row
+                .col-4
+                    .form-group
+                        label(for="jira-user") Assign ticket to
+                        input#jira-user.form-control(type="text", name="jira-user" list="jiraUsers")
+                .col-8
+                    .form-group
+                        label(for="jira-additional-comment") Additional Jira comment
+                        textarea#jira-additional-comment(name="jira-additional-comment", cols="30", rows="10")
+                    .form-row
+                        button#submitBtn.btn.btn-success.col-4(type="submit" disabled) Zendit
+
+        script
+            | CKEDITOR.replace('jira-additional-comment');
+        
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous")
+        script(src="../js/index.js")
+        
+        
