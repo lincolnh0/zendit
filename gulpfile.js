@@ -50,13 +50,4 @@ gulp.task('watch', function watch() {
   gulp.watch(srcPaths.js.src +'/**/*.js', gulp.series('scripts'))
 });
 
-  // Gulp task to minify JavaScript files
-gulp.task('images', function() {
-return gulp.src('./app/' + current_project + '/src/img/*')
-  // Minify the file
-  .pipe(imagemin())
-  // Output
-  .pipe(gulp.dest('./app/' + current_project + '/static/img'))
-});
-
 gulp.task('default', gulp.series('views', 'styles', 'scripts', 'watch'));
