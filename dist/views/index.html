@@ -3,29 +3,36 @@
   <head>
     <meta charset="utf-8">
     <title>Zendit</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/bootstrap4.6.min.css">
+    <link rel="stylesheet" href="../css/fa-all.min.css">
     <script src="../libraries/ckeditor/ckeditor.js"></script>
+    <link rel="stylesheet" href="../css/index.css">
   </head>
   <body>
-    <div class="container">
+    <div class="container mt-5">
       <form></form>
+      <datalist id="repositoryList"></datalist>
       <datalist id="branchList"></datalist>
       <datalist id="prReviewers"></datalist>
       <datalist id="jiraUsers"></datalist>
       <div class="row">
         <div class="col-4">
           <div class="form-group">
-            <label for="working-directory">Repository folder</label>
-            <button class="btn btn-primary form-control" id="working-directory">Choose folder </button>
+            <label for="selectRepository">Repository</label>
+            <div class="input-group">
+              <select class="custom-select" id="selectRepository"></select>
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary btn-light" id="btnRefreshRepos"><i class="fas fa-sync-alt"></i></button>
+              </div>
+            </div>
           </div>
           <div class="form-group">
-            <label for="source-branch">Base branch</label>
-            <input class="form-control" id="source-branch" type="text" name="source-branch" list="branchList">
+            <label for="tbxSourceBranch">Base branch</label>
+            <input class="form-control" id="tbxSourceBranch" type="text" name="source-branch" list="branchList">
           </div>
           <div class="form-group">
-            <label for="head-branch">Head branch</label>
-            <input class="form-control" id="head-branch" type="text" name="head-branch" list="branchList">
+            <label for="tbxHeadBranch">Head branch</label>
+            <input class="form-control" id="tbxHeadBranch" type="text" name="head-branch" list="branchList">
           </div>
           <div class="form-group">
             <label for="reviewer">PR reviewer</label>
@@ -34,12 +41,12 @@
         </div>
         <div class="col-8">
           <div class="form-group">
-            <label for="pr-title">Title</label>
-            <input class="form-control" id="pr-title" type="text" name="pr-title">
+            <label for="tbxPRTitle">Title</label>
+            <input class="form-control" id="tbxPRTitle" type="text" name="pr-title">
           </div>
           <div class="form-group">
-            <label for="pr-description">Pull request</label>
-            <textarea class="form-control" id="pr-description" name="pr-description" cols="30" rows="12"></textarea>
+            <label for="tbxPR">Pull request</label>
+            <textarea class="form-control" id="tbxPR" name="pr-description" rows="12"></textarea>
           </div>
         </div>
       </div>
@@ -52,17 +59,16 @@
         </div>
         <div class="col-8">
           <div class="form-group">
-            <label for="jira-additional-comment">Additional Jira comment</label>
-            <textarea id="jira-additional-comment" name="jira-additional-comment" cols="30" rows="10"></textarea>
+            <label for="tbxJiraComment">Jira comment</label>
+            <textarea id="tbxJiraComment" name="tbxJiraComment" cols="30" rows="10"></textarea>
           </div>
           <div class="form-row">
-            <button class="btn btn-success col-4" id="submitBtn" type="submit" disabled>Zendit</button>
+            <button class="btn btn-success col-4" id="btnSubmit" type="submit">Zendit</button>
           </div>
         </div>
       </div>
     </div>
-    <script>CKEDITOR.replace('jira-additional-comment');</script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <script>CKEDITOR.replace('tbxJiraComment');</script>
     <script src="../js/index.js"></script>
   </body>
 </html>

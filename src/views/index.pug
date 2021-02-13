@@ -5,40 +5,48 @@ html(lang='en')
         title Zendit
 
         //- Bootstrap 4.6
-        link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous")
+        link(rel="stylesheet", href="../css/bootstrap4.6.min.css")
+        link(rel="stylesheet", href="../css/fa-all.min.css")
 
         //- Bootstrap 5
-        //- link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous")
-        link(rel="stylesheet", href="../css/index.css")
+        //- link(rel="stylesheet", href="../css/bootstrap5.min.css")
         script(src="../libraries/ckeditor/ckeditor.js")
+        link(rel="stylesheet", href="../css/index.css")
         
     body
-        .container
+        .container.mt-5
             form
+            datalist#repositoryList
             datalist#branchList
             datalist#prReviewers
             datalist#jiraUsers
             .row
                 .col-4
                     .form-group
-                        label(for="working-directory") Repository folder
-                        button#working-directory.btn.btn-primary.form-control Choose folder 
+                        label(for="selectRepository") Repository
+
+                        .input-group
+                            select#selectRepository.custom-select
+                            .input-group-append
+                                button#btnRefreshRepos.btn.btn-outline-secondary.btn-light
+                                    i.fas.fa-sync-alt
+
                     .form-group
-                        label(for="source-branch") Base branch
-                        input#source-branch.form-control(type="text", name="source-branch" list="branchList")
+                        label(for="tbxSourceBranch") Base branch
+                        input#tbxSourceBranch.form-control(type="text", name="source-branch" list="branchList")
                     .form-group
-                        label(for="head-branch") Head branch
-                        input#head-branch.form-control(type="text", name="head-branch" list="branchList")
+                        label(for="tbxHeadBranch") Head branch
+                        input#tbxHeadBranch.form-control(type="text", name="head-branch" list="branchList")
                     .form-group
                         label(for="reviewer") PR reviewer
                         input#reviewer.form-control(type="text", name="reviewer" list="prReviewers")
                 .col-8
                     .form-group
-                        label(for="pr-title") Title
-                        input#pr-title.form-control(type="text", name="pr-title")
+                        label(for="tbxPRTitle") Title
+                        input#tbxPRTitle.form-control(type="text", name="pr-title")
                     .form-group
-                        label(for="pr-description") Pull request
-                        textarea#pr-description.form-control(name="pr-description", cols="30", rows="12")
+                        label(for="tbxPR") Pull request
+                        textarea#tbxPR.form-control(name="pr-description", rows="12")
 
             .row
                 .col-4
@@ -47,15 +55,14 @@ html(lang='en')
                         input#jira-user.form-control(type="text", name="jira-user" list="jiraUsers")
                 .col-8
                     .form-group
-                        label(for="jira-additional-comment") Additional Jira comment
-                        textarea#jira-additional-comment(name="jira-additional-comment", cols="30", rows="10")
+                        label(for="tbxJiraComment") Jira comment
+                        textarea#tbxJiraComment(name="tbxJiraComment", cols="30", rows="10")
                     .form-row
-                        button#submitBtn.btn.btn-success.col-4(type="submit" disabled) Zendit
+                        button#btnSubmit.btn.btn-success.col-4(type="submit") Zendit
 
         script
-            | CKEDITOR.replace('jira-additional-comment');
+            | CKEDITOR.replace('tbxJiraComment');
         
-        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous")
         script(src="../js/index.js")
         
         

@@ -9,50 +9,99 @@ function ready(fn) {
 
 function add_event_listeners_to_form() {
     // Add form related event listeners.
-    const workingDirBtn = document.getElementById('working-directory');
-    workingDirBtn.addEventListener('click', () => {window.zendit.send('select-directory')})
+    btnRefreshRepos.addEventListener('click', () => populate_repositories())
+
+    selectRepository.addEventListener('change', (e) => populate_branches())
+
+    tbxHeadBranch.addEventListener('input', () => autofill_title())
+
+    btnSubmit.addEventListener('click', () => submit_pr_and_comment())
+    populate_repositories()
 }
 
 ready(add_event_listeners_to_form)
+let loadedConfigs = {}
 
+function populate_repositories() {
+    window.zendit.send('get-settings', { repo: 'globals', init: true });
 
-// Display if current directory is a git repo.
-window.zendit.receive('selected-directory', (data) => {
-    const workingDirBtn = document.getElementById('working-directory');
-    const submitBtn = document.getElementById('submitBtn');
+}
 
-    if (data.filepath.length == 0) {
-        workingDirBtn.innerText = 'SELECT A FOLDER';
+function populate_branches() {
+    
+    tbxSourceBranch.value = '';
+    tbxHeadBranch.value = '';
+    btnSubmit.disabled = selectRepository.value == 0;
+
+    if ('prTemplate' in loadedConfigs[selectRepository.value]) {
+        tbxPR.value = loadedConfigs[selectRepository.value].prTemplate;
     }
     else {
-        workingDirBtn.innerText = data.filepath;
+        tbxPR.value = loadedConfigs['globals'].prTemplate;
     }
 
-    if (!data.eligible) {
-        workingDirBtn.classList.add('btn-danger')
-        workingDirBtn.classList.remove('btn-primary')
+    if ('commentTemplate' in loadedConfigs[selectRepository.value]) {
+        CKEDITOR.instances['tbxJiraComment'].setData(loadedConfigs[selectRepository.value].commentTemplate);
     }
     else {
-        workingDirBtn.classList.add('btn-primary')
-        workingDirBtn.classList.remove('btn-danger')
-        workingDirBtn.dataset.filepath = data.filepath[data.filepath.length - 1];
-        workingDirBtn.innerText = data.filepath[data.filepath.length - 1].split('/').pop();
+        CKEDITOR.instances['tbxJiraComment'].setData(loadedConfigs['globals'].commentTemplate);
     }
-    submitBtn.disabled = !data.eligible;
+    window.zendit.send('get-branches', loadedConfigs[selectRepository.value].directory)
+}
 
-    
-    const branchDataList = document.getElementById('branchList');
-    
-    branchDataList.innerHTML = '';
-    
+
+function autofill_title() {
+    branchList.childNodes.forEach((element) => {
+        if (tbxHeadBranch.value == element.value) {
+            tbxPRTitle.value = tbxHeadBranch.value;
+        }
+    })
+}
+
+function submit_pr_and_comment() {
+    window.zendit.send('create-pr', {
+        githubToken: loadedConfigs['globals'].githubToken,
+        owner: loadedConfigs[selectRepository.value].owner,
+        repo: loadedConfigs[selectRepository.value].repo,
+        head: tbxHeadBranch.value,
+        source: tbxSourceBranch.value,
+        title: tbxPRTitle.value,
+        body: tbxPR.value,
+    });
+}
+
+// Populate branch data list.
+window.zendit.receive('branches-got', (data) => {
+    branchList.innerHTML = '';
+
     let branches = data.branches.filter((elem) => { if (elem != '') return elem; })
     branches.forEach(element => {
         branchName = element.split(' ').pop();
         branchOption = document.createElement('option');
         branchOption.value = branchName;
         branchOption.innerText = branchName;
-        branchDataList.appendChild(branchOption)
+        branchList.appendChild(branchOption)
 
     });
-    
+})
+
+// Populate fields with retrieved settings
+window.zendit.receive('settings-got', (data) => {
+    if (data.repo == 'globals') {
+        data.config.alias = 'Global'
+    }
+    else {
+
+        if (data.repo in loadedConfigs == false) {
+            const newRepoOption = document.createElement('option')
+            newRepoOption.value = data.repo
+            newRepoOption.innerText = data.config.alias
+            selectRepository.appendChild(newRepoOption)
+        }
+    }
+    loadedConfigs[data.repo] = data.config;
+    if (selectRepository.childNodes.length > 0) {
+        populate_branches()
+    }
+
 })

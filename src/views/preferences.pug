@@ -1,0 +1,126 @@
+doctype
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        title Preferences
+
+        //- Bootstrap 4.6
+        //- link(rel="stylesheet", href="../css/bootstrap4.6.min.css")
+
+        //- Bootstrap 5
+        link(rel="stylesheet", href="../css/bootstrap5.min.css")
+        link(rel="stylesheet", href="../css/fa-all.min.css")
+        script(src="../libraries/ckeditor/ckeditor.js")
+        link(rel="stylesheet", href="../css/preferences.css")
+    body
+        .container.mt-4
+            .row
+                nav.nav.nav-pills.flex-column.col-3
+                    a.nav-link.active(data-bs-target="#account-tab", data-bs-toggle="pill")
+                        i.fas.fa-users
+                        span Accounts
+                    a.nav-link(data-bs-target="#templates-tab", data-bs-toggle="pill") 
+                        i.fas.fa-code
+                        span Templates
+                    a.nav-link(data-bs-target="#add-new-repo-tab", data-bs-toggle="pill") 
+                        i.fas.fa-plus-circle
+                        span New repo
+                
+                .tab-content.col-9
+                    form
+                    #account-tab.tab-pane.show.active
+                        .mb-3
+                            label.form-label(for="github-api-token") Github API token
+                            .input-group
+                                input#github-api-token.form-control(type="password", name="github-api-token", placeholder="Github API token")
+                                .input-group-append
+                                    button#btnShowGithub.btn.btn-outline-secondary.btn-light(data-target="github-api-token")
+                                        i.fas.fa-eye
+
+                        .mb-3
+                            label.form-label(for="jira-domain") Jira subdomain
+                            .input-group    
+                                .input-group-prepend
+                                    span.input-group-text https://
+                                input#jira-domain.form-control(type="text", name="jira-domain", placeholder="Jira subdomain" required)
+                                .input-group-append
+                                    span.input-group-text .atlassian.net
+                        
+                        .mb-5
+                            label.form-label(for="jira-api-token") Jira API token
+                            .input-group
+                                input#jira-api-token.form-control(type="password", name="jira-api-token", placeholder="Jira API token")
+                                .input-group-append
+                                    button#btnShowJira.btn.btn-outline-secondary.btn-light(data-target="jira-api-token") 
+                                        i.fas.fa-eye
+                        
+                        button#btnSaveAccount.btn.btn-success.col-2(type="button")
+                            i.fas.fa-save 
+                            span Save
+                    
+                    #templates-tab.tab-pane
+                        .row
+                            .col-6.mb-3
+                                label.form-label(for="selectRepository") Repository
+                                .input-group
+                                    select#selectRepository.form-select
+                                    button#btnRemoveRepository.btn.btn-outline-secondary.btn-danger
+                                        i.fas.fa-trash-alt
+                            .col-6.mb-3
+                                label.form-label(for="tbxBranchRegex") Branch-ticket regex
+                                input#tbxBranchRegex.form-control(type="text", name="tbxBranchRegex" disabled placeholder="Coming soon")
+                        .row
+                            .col.mb-3
+                                label(for="pr-template") Pull request template
+                                textarea#pr-template.form-control(name="pr-template", rows="13")
+                                .form-text
+                                    p Available tokens: <code>[ticket_no]</code>
+                        
+                            .col.mb-3
+                                label(for="jira-comment-template") Jira comment template
+                                textarea#jira-comment-template.form-control(name="pr=template", rows="30")
+                                .form-text
+                                    p Available tokens: <code>[assignee]</code>, <code>[pr_link]</code>, <code>[extra_info]</code>
+                        .input-group-btn
+                            button#btnSaveTemplate.btn.btn-success.col-2(type="button")
+                                i.fas.fa-save 
+                                span Save
+                            button#btnResetTemplate.btn.btn-light.col-2(type="button")
+                                i.fas.fa-sync-alt
+                                span Reset
+                            
+                        
+                    
+                    #add-new-repo-tab.tab-pane
+                        .mb-3
+                            label.form-label(for="tbxDirectory") Directory
+                            .input-group
+                                input#tbxDirectory.form-control(type="text", readonly, placeholder="Select a directory")
+                                button#btnSelectDirectory.form-button.btn.btn-primary
+                                    i.fas.fa-folder-open
+                        .row
+                            .col-6.mb-3
+                                .form-floating
+                                    input#tbxRepoUrl.form-control(type="text", placeholder="Repository URL")
+                                    label(for="tbxRepoUrl") Repository URL
+                            .col-6.mb-3
+                                .form-floating
+                                    input#tbxRepoAlias.form-control(type="text", placeholder="Alias")
+                                    label(for="tbxRepoAlias") Alias
+                        
+                        
+
+                        button#btnAddRepo.btn.btn-success.col-2(type="button" disabled)
+                            i.fas.fa-plus
+                            span Add
+                    
+
+                
+                
+        script
+            | CKEDITOR.replace('jira-comment-template');
+            | CKEDITOR.config.height = 280;
+        script(src="../js/bootstrap.bundle.min.js")
+        script(src="../js/preferences.js")
+
+

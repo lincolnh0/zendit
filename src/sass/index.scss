@@ -1,20 +1,27 @@
-$theme: #000021;
+$primary: #000021;
+$layered: #222230;
+
+$light_primary: #fdfdff;
 
 body {
-    background-color: $theme;
-    color: white;
+    background-color: $primary;
+    color: $light_primary;
     font-family: 'Lato', sans-serif;
     font-weight: bold;
 }
 
-datalist {
-    option {
-
-        background-color: $theme;
-        color: white;
-    }
+textarea {
+    resize: none;
 }
 
-.container {
-    margin-top: 2em;
+i.fas ~ span {
+    padding: 0 0.5em;
+}
+
+.input-group .btn-outline-secondary {
+    color: $primary;
+
+    :hover {
+        color: $light_primary;
+    }
 }
