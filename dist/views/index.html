@@ -63,7 +63,21 @@
             <textarea id="tbxJiraComment" name="tbxJiraComment" cols="30" rows="10"></textarea>
           </div>
           <div class="form-row">
-            <button class="btn btn-success col-4" id="btnSubmit" type="submit">Zendit</button>
+            <div class="col">
+              <button class="btn btn-success col-8" id="btnSubmit" type="submit"> <i class="fas fa-rocket"></i><span>Zendit</span></button>
+            </div>
+            <div class="col">
+              <div class="custom-control custom-switch mt-2">
+                <input class="custom-control-input" id="cbxPRCreated" type="checkbox" name="cbxPRCreated" disabled>
+                <label class="custom-control-label" for="cbxPRCreated">PR created</label>
+              </div>
+            </div>
+            <div class="col">
+              <div class="custom-control custom-switch mt-2">
+                <input class="custom-control-input" id="cbxCommentCreated" type="checkbox" name="cbxCommentCreated" disabled>
+                <label class="custom-control-label" for="cbxCommentCreated">Comment created</label>
+              </div>
+            </div>
           </div>
         </div>
       </div>

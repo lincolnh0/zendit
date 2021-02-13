@@ -43,6 +43,7 @@ function save_accounts(e) {
             githubToken: document.getElementById('github-api-token').value,
             jiraDomain: document.getElementById('jira-domain').value,
             jiraToken: document.getElementById('jira-api-token').value,
+            jiraEmail: document.getElementById('jira-email').value,
         },
         trigger: buttonNode.id,
         force_overwrite: false,
@@ -178,6 +179,7 @@ window.zendit.receive('settings-got', (data) => {
         document.getElementById('github-api-token').value = data.config.githubToken;
         document.getElementById('jira-domain').value = data.config.jiraDomain;
         document.getElementById('jira-api-token').value = data.config.jiraToken;
+        document.getElementById('jira-email').value = data.config.jiraEmail;
         data.config.alias = 'Global'
     }
 

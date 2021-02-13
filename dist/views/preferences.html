@@ -24,12 +24,19 @@
                 </div>
               </div>
             </div>
-            <div class="mb-3">
-              <label class="form-label" for="jira-domain">Jira subdomain</label>
-              <div class="input-group">   
-                <div class="input-group-prepend"><span class="input-group-text">https://</span></div>
-                <input class="form-control" id="jira-domain" type="text" name="jira-domain" placeholder="Jira subdomain" required>
-                <div class="input-group-append"><span class="input-group-text">.atlassian.net</span></div>
+            <div class="row">
+              <div class="col mb-3">
+                <label class="form-label" for="jira-domain">Jira domain</label>
+                <div class="input-group">   
+                  <div class="input-group-prepend"><span class="input-group-text">https://</span></div>
+                  <input class="form-control" id="jira-domain" type="text" name="jira-domain" placeholder="Jira domain" required>
+                </div>
+              </div>
+              <div class="col mb-3">
+                <label class="form-label" for="jira-email">Jira email</label>
+                <div class="input-group">
+                  <input class="form-control" id="jira-email" type="email" name="jira-email" required>
+                </div>
               </div>
             </div>
             <div class="mb-5">
@@ -62,14 +69,14 @@
                 <label for="pr-template">Pull request template</label>
                 <textarea class="form-control" id="pr-template" name="pr-template" rows="13"></textarea>
                 <div class="form-text">
-                  <p>Available tokens: <code>[ticket_no]</code></p>
+                  <p>Available tokens: <code>[ticketNo]</code></p>
                 </div>
               </div>
               <div class="col mb-3">
                 <label for="jira-comment-template">Jira comment template</label>
                 <textarea class="form-control" id="jira-comment-template" name="pr=template" rows="30"></textarea>
                 <div class="form-text">
-                  <p>Available tokens: <code>[assignee]</code>, <code>[pr_link]</code>, <code>[extra_info]</code></p>
+                  <p>Available tokens: <code>[assignee]</code>, <code>[prLink]</code></p>
                 </div>
               </div>
             </div>

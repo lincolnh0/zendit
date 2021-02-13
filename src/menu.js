@@ -8,27 +8,17 @@ const template = [
         label: 'File',
         submenu: [
           {
-            label: 'New repo',
-            accelerator: 'CommandOrControl+N',
-          },
-          {
-            label: 'Open repo',
-            accelerator: 'CommandOrControl+O',
-          },
-          { type: 'separator' },
-          {
             label: 'Preferences',
             accelerator: 'CommandOrControl+,',
-            click() {
-                const currentWin = BrowserWindow.getFocusedWindow();
+            click(item, focusedWindow) {
                 const settingsWindow = new BrowserWindow({
                     width: 1000, 
                     height: 650,
                     alwaysOnTop: true,
                     autoHideMenuBar: true,
                     skipTaskbar: true,
-                    parent: currentWin,
-                    // resizable: false,
+                    parent: focusedWindow,
+                    resizable: false,
                     modal: true,
                     webPreferences: {
                         contextIsolation: true,

@@ -15,7 +15,7 @@ function add_event_listeners_to_form() {
 
     tbxHeadBranch.addEventListener('input', () => autofill_title())
 
-    btnSubmit.addEventListener('click', () => submit_pr_and_comment())
+    btnSubmit.addEventListener('click', () => submit_pr())
     populate_repositories()
 }
 
@@ -49,6 +49,13 @@ function populate_branches() {
     window.zendit.send('get-branches', loadedConfigs[selectRepository.value].directory)
 }
 
+function populate_jira_users() {
+    window.zendit.send('get-jira-users', {
+        jiraDomain: loadedConfigs['globals'].jiraDomain,
+        jiraToken: loadedConfigs['globals'].jiraToken,
+        jiraEmail: loadedConfigs['globals'].jiraEmail,
+    })
+}
 
 function autofill_title() {
     branchList.childNodes.forEach((element) => {
@@ -58,16 +65,55 @@ function autofill_title() {
     })
 }
 
-function submit_pr_and_comment() {
-    window.zendit.send('create-pr', {
-        githubToken: loadedConfigs['globals'].githubToken,
-        owner: loadedConfigs[selectRepository.value].owner,
-        repo: loadedConfigs[selectRepository.value].repo,
-        head: tbxHeadBranch.value,
-        source: tbxSourceBranch.value,
-        title: tbxPRTitle.value,
-        body: tbxPR.value,
-    });
+function return_token_object() {
+    return {
+        ticketNo: tbxHeadBranch.value.split('/')[0],
+
+    }
+}
+
+function submit_pr() {
+    if (tbxHeadBranch.value != tbxSourceBranch.value) {
+        // Prepare ui to prevent double entry + feedback
+        btnSubmit.disabled = true;
+        btnSubmit.dataset.originalText = btnSubmit.innerHTML;
+        btnSubmit.innerText = 'Loading';
+        
+        tokenObj = return_token_object()
+        // Preprocess tokens.
+        tbxPR.value = tbxPR.value.replace('[ticketNo]', tokenObj.ticketNo)
+        
+        window.zendit.send('create-pr', {
+            githubToken: loadedConfigs['globals'].githubToken,
+            owner: loadedConfigs[selectRepository.value].owner,
+            repo: loadedConfigs[selectRepository.value].repo,
+            head: tbxHeadBranch.value,
+            source: tbxSourceBranch.value,
+            title: tbxPRTitle.value,
+            body: tbxPR.value,
+        });
+    }
+}
+
+function submit_jira_comment(data) {
+    window.zendit.send('create-jira-comment', {
+        ticketNo: tbxHeadBranch.value.split('/')[0],
+        jiraDomain: loadedConfigs['globals'].jiraDomain,
+        jiraToken: loadedConfigs['globals'].jiraToken,
+        jiraEmail: loadedConfigs['globals'].jiraEmail,
+        prLink: data.prLink
+    })
+
+}
+
+function free_submit_buttons() {
+    setTimeout(() => {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = btnSubmit.dataset.originalText;
+        cbxPRCreated.checked = false;
+        cbxCommentCreated.checked = false;
+
+    }, 1500)
 }
 
 // Populate branch data list.
@@ -81,7 +127,9 @@ window.zendit.receive('branches-got', (data) => {
         branchOption.value = branchName;
         branchOption.innerText = branchName;
         branchList.appendChild(branchOption)
-
+        if (branchName == 'master' || branchName == 'main') {
+            tbxSourceBranch.value = branchName;
+        }
     });
 })
 
@@ -89,19 +137,64 @@ window.zendit.receive('branches-got', (data) => {
 window.zendit.receive('settings-got', (data) => {
     if (data.repo == 'globals') {
         data.config.alias = 'Global'
+        loadedConfigs[data.repo] = data.config;
+        populate_jira_users()
+
     }
     else {
-
         if (data.repo in loadedConfigs == false) {
             const newRepoOption = document.createElement('option')
             newRepoOption.value = data.repo
             newRepoOption.innerText = data.config.alias
             selectRepository.appendChild(newRepoOption)
         }
+        loadedConfigs[data.repo] = data.config;
     }
-    loadedConfigs[data.repo] = data.config;
+    
     if (selectRepository.childNodes.length > 0) {
         populate_branches()
     }
 
+})
+
+// On PR creation
+window.zendit.receive('pr-created', (data) => {
+    // UI feedback.
+    if (data.status == 201) {
+
+        cbxPRCreated.checked = true;
+
+        if (CKEDITOR.instances['tbxJiraComment'].getData() != '') {
+            // Initiate jira comment.
+            submit_jira_comment(data)
+        }
+        else {
+            free_submit_buttons();
+        }
+    }
+
+})
+
+
+// On PR creation
+window.zendit.receive('jira-comment-created', (data) => {
+    // UI feedback.
+    if (data.status == 201) {
+
+        cbxCommentCreated.checked = true;
+        free_submit_buttons();
+
+        
+    }
+
+    
+})
+
+window.zendit.receive('jira-users-got', (data) => {
+    for (const index in data.users) {
+        userOption = document.createElement('option');
+        userOption.value = data.users[index].name;
+        userOption.dataset.accountId = data.users[index].id;
+        jiraUsers.appendChild(userOption)
+    }
 })

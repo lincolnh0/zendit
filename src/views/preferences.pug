@@ -37,15 +37,18 @@ html(lang='en')
                                     button#btnShowGithub.btn.btn-outline-secondary.btn-light(data-target="github-api-token")
                                         i.fas.fa-eye
 
-                        .mb-3
-                            label.form-label(for="jira-domain") Jira subdomain
-                            .input-group    
-                                .input-group-prepend
-                                    span.input-group-text https://
-                                input#jira-domain.form-control(type="text", name="jira-domain", placeholder="Jira subdomain" required)
-                                .input-group-append
-                                    span.input-group-text .atlassian.net
-                        
+                        .row
+                            .col.mb-3
+                                label.form-label(for="jira-domain") Jira domain
+                                .input-group    
+                                    .input-group-prepend
+                                        span.input-group-text https://
+                                    input#jira-domain.form-control(type="text", name="jira-domain", placeholder="Jira domain" required)
+                            .col.mb-3
+                                label.form-label(for="jira-email") Jira email
+                                .input-group
+                                    input#jira-email.form-control(type="email", name="jira-email" required)
+                                
                         .mb-5
                             label.form-label(for="jira-api-token") Jira API token
                             .input-group
@@ -74,13 +77,13 @@ html(lang='en')
                                 label(for="pr-template") Pull request template
                                 textarea#pr-template.form-control(name="pr-template", rows="13")
                                 .form-text
-                                    p Available tokens: <code>[ticket_no]</code>
+                                    p Available tokens: <code>[ticketNo]</code>
                         
                             .col.mb-3
                                 label(for="jira-comment-template") Jira comment template
                                 textarea#jira-comment-template.form-control(name="pr=template", rows="30")
                                 .form-text
-                                    p Available tokens: <code>[assignee]</code>, <code>[pr_link]</code>, <code>[extra_info]</code>
+                                    p Available tokens: <code>[assignee]</code>, <code>[prLink]</code>
                         .input-group-btn
                             button#btnSaveTemplate.btn.btn-success.col-2(type="button")
                                 i.fas.fa-save 

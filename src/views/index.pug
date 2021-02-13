@@ -58,7 +58,20 @@ html(lang='en')
                         label(for="tbxJiraComment") Jira comment
                         textarea#tbxJiraComment(name="tbxJiraComment", cols="30", rows="10")
                     .form-row
-                        button#btnSubmit.btn.btn-success.col-4(type="submit") Zendit
+                        .col
+                            button#btnSubmit.btn.btn-success.col-8(type="submit") 
+                                i.fas.fa-rocket
+                                span Zendit
+                            
+                        .col
+                            .custom-control.custom-switch.mt-2
+                                input#cbxPRCreated.custom-control-input(type="checkbox", name="cbxPRCreated" disabled)
+                                label.custom-control-label(for="cbxPRCreated") PR created
+                        .col
+                            .custom-control.custom-switch.mt-2
+                                input#cbxCommentCreated.custom-control-input(type="checkbox", name="cbxCommentCreated" disabled)
+                                label.custom-control-label(for="cbxCommentCreated") Comment created
+
 
         script
             | CKEDITOR.replace('tbxJiraComment');
