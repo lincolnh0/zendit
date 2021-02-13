@@ -19,6 +19,8 @@ contextBridge.exposeInMainWorld(
                 'create-pr',
                 'create-jira-comment',
                 'get-jira-users',
+                'get-github-users',
+                'request-review',
             ];
             if (validChannels.includes(channel)) {
                 ipcRenderer.send(channel, data);
@@ -33,6 +35,8 @@ contextBridge.exposeInMainWorld(
                 'pr-created',
                 'jira-comment-created',
                 'jira-users-got',
+                'github-users-got',
+                'review-requested',
             ];
             if (validChannels.includes(channel)) {
                 // Deliberately strip event as it includes `sender` 

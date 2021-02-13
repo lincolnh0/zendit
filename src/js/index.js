@@ -46,6 +46,9 @@ function populate_branches() {
     else {
         CKEDITOR.instances['tbxJiraComment'].setData(loadedConfigs['globals'].commentTemplate);
     }
+
+
+    populate_github_users()
     window.zendit.send('get-branches', loadedConfigs[selectRepository.value].directory)
 }
 
@@ -55,6 +58,19 @@ function populate_jira_users() {
         jiraToken: loadedConfigs['globals'].jiraToken,
         jiraEmail: loadedConfigs['globals'].jiraEmail,
     })
+}
+
+function populate_github_users() {
+    if (githubUsers.dataset.owner != loadedConfigs[selectRepository.value].owner) {
+        while (githubUsers.firstChild) {
+            githubUsers.removeChild(githubUsers.lastChild)
+        }
+        githubUsers.dataset.owner = loadedConfigs[selectRepository.value].owner;
+        window.zendit.send('get-github-users', {
+            owner: loadedConfigs[selectRepository.value].owner,
+            githubToken: loadedConfigs['globals'].githubToken,
+        })
+    }
 }
 
 function autofill_title() {
@@ -79,19 +95,21 @@ function submit_pr() {
         btnSubmit.dataset.originalText = btnSubmit.innerHTML;
         btnSubmit.innerText = 'Loading';
         
+        // Preprocess tokens. need better implementation.
         tokenObj = return_token_object()
-        // Preprocess tokens.
-        tbxPR.value = tbxPR.value.replace('[ticketNo]', tokenObj.ticketNo)
+        const processedBody = tbxPR.value.replace('[ticketNo]', tokenObj.ticketNo)
         
-        window.zendit.send('create-pr', {
+        let requestObject = {
             githubToken: loadedConfigs['globals'].githubToken,
             owner: loadedConfigs[selectRepository.value].owner,
             repo: loadedConfigs[selectRepository.value].repo,
             head: tbxHeadBranch.value,
             source: tbxSourceBranch.value,
             title: tbxPRTitle.value,
-            body: tbxPR.value,
-        });
+            body: processedBody,
+        }
+
+        window.zendit.send('create-pr', requestObject);
     }
 }
 
@@ -139,7 +157,6 @@ window.zendit.receive('settings-got', (data) => {
         data.config.alias = 'Global'
         loadedConfigs[data.repo] = data.config;
         populate_jira_users()
-
     }
     else {
         if (data.repo in loadedConfigs == false) {
@@ -164,6 +181,18 @@ window.zendit.receive('pr-created', (data) => {
 
         cbxPRCreated.checked = true;
 
+        if (tbxReviewer.value != '') {
+            githubUsers.childNodes.forEach((element) => {
+                if (tbxReviewer.value == element.value) {
+                    data = Object.assign(data, {
+                        githubToken: loadedConfigs['globals'].githubToken,
+                        reviewers: [tbxReviewer.value],
+                    })
+                    window.zendit.send('request-review', data)
+                }
+            })
+        }
+        
         if (CKEDITOR.instances['tbxJiraComment'].getData() != '') {
             // Initiate jira comment.
             submit_jira_comment(data)
@@ -192,9 +221,21 @@ window.zendit.receive('jira-comment-created', (data) => {
 
 window.zendit.receive('jira-users-got', (data) => {
     for (const index in data.users) {
-        userOption = document.createElement('option');
-        userOption.value = data.users[index].name;
-        userOption.dataset.accountId = data.users[index].id;
-        jiraUsers.appendChild(userOption)
+        jiraUserOption = document.createElement('option');
+        jiraUserOption.value = data.users[index].name;
+        jiraUserOption.dataset.accountId = data.users[index].id;
+        jiraUsers.appendChild(jiraUserOption)
     }
+})
+
+window.zendit.receive('github-users-got', (data) => {
+    data.data.forEach((user) => {
+        githubUserOption = document.createElement('option');
+        githubUserOption.value = user.login;
+        githubUsers.appendChild(githubUserOption)
+    })
+})
+
+window.zendit.receive('review-requested', (data) => {
+    console.log(data)
 })

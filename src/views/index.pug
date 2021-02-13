@@ -18,7 +18,7 @@ html(lang='en')
             form
             datalist#repositoryList
             datalist#branchList
-            datalist#prReviewers
+            datalist#githubUsers
             datalist#jiraUsers
             .row
                 .col-4
@@ -38,8 +38,8 @@ html(lang='en')
                         label(for="tbxHeadBranch") Head branch
                         input#tbxHeadBranch.form-control(type="text", name="head-branch" list="branchList")
                     .form-group
-                        label(for="reviewer") PR reviewer
-                        input#reviewer.form-control(type="text", name="reviewer" list="prReviewers")
+                        label(for="tbxReviewer") PR reviewer
+                        input#tbxReviewer.form-control(type="text", name="tbxReviewer" list="githubUsers")
                 .col-8
                     .form-group
                         label(for="tbxPRTitle") Title

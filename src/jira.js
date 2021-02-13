@@ -60,6 +60,7 @@ ipcMain.on('create-jira-comment', async (event, arg) => {
 })
 
 ipcMain.on('get-jira-users', async (event, arg) => {
+  win = BrowserWindow.getFocusedWindow()
   const requestObject = {
     requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/users/search?maxResults=2000',
     jiraEmail: arg.jiraEmail,
