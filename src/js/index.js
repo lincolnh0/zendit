@@ -83,7 +83,7 @@ function autofill_title() {
 
 function return_token_object() {
     return {
-        ticketNo: tbxHeadBranch.value.split('/')[0],
+        ticketNo: regex_branch_to_ticket(tbxHeadBranch.value),
 
     }
 }
@@ -113,15 +113,62 @@ function submit_pr() {
     }
 }
 
+function child_nodes_recursive(elem) {
+    if (elem.childNodes.length > 0) {
+        
+        return {
+            type: elem.nodeName,
+            children: Array.from(elem.childNodes).map(child => child_nodes_recursive(child)),
+        }
+    }
+    else {
+        if (elem.nodeValue != null) {
+            return elem.nodeValue;
+        }
+        else {
+            return elem.nodeName
+        }
+    }
+    
+}
+
 function submit_jira_comment(data) {
-    window.zendit.send('create-jira-comment', {
-        ticketNo: tbxHeadBranch.value.split('/')[0],
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(CKEDITOR.instances['tbxJiraComment'].getData(), 'text/html')
+    const bodyObject = child_nodes_recursive(doc.body)
+    let requestObject = {
+        ticketNo: regex_branch_to_ticket(tbxHeadBranch.value),
         jiraDomain: loadedConfigs['globals'].jiraDomain,
         jiraToken: loadedConfigs['globals'].jiraToken,
         jiraEmail: loadedConfigs['globals'].jiraEmail,
-        prLink: data.prLink
-    })
+        visibility: tbxJiraGroup.value,
+        body: bodyObject,
+        tokens: {
+            prLink: {
+                type:'link',
+                arg: [data.prLink, data.prLink],
+            }
 
+        }
+        }
+    if (tbxJiraUser.value != '') {
+        jiraUsers.childNodes.forEach((element) => {
+            if (tbxJiraUser.value == element.value) {
+                requestObject.tokens.assignee = {
+                    type: 'mention',
+                    arg: [element.dataset.accountId, tbxJiraUser.value]
+                }
+
+            }
+        })
+    }
+    window.zendit.send('create-jira-comment', requestObject)
+
+}
+
+
+function regex_branch_to_ticket(branch) {
+    return branch.split('/')[0];
 }
 
 function free_submit_buttons() {
@@ -153,12 +200,15 @@ window.zendit.receive('branches-got', (data) => {
 
 // Populate fields with retrieved settings
 window.zendit.receive('settings-got', (data) => {
+    // Store global config.
     if (data.repo == 'globals') {
         data.config.alias = 'Global'
         loadedConfigs[data.repo] = data.config;
         populate_jira_users()
     }
     else {
+
+        // Add config to memory if not stored already.
         if (data.repo in loadedConfigs == false) {
             const newRepoOption = document.createElement('option')
             newRepoOption.value = data.repo
@@ -168,6 +218,7 @@ window.zendit.receive('settings-got', (data) => {
         loadedConfigs[data.repo] = data.config;
     }
     
+    // The initial setting to arrive is globals, so dropdown will still be empty.
     if (selectRepository.childNodes.length > 0) {
         populate_branches()
     }
@@ -213,6 +264,14 @@ window.zendit.receive('jira-comment-created', (data) => {
         cbxCommentCreated.checked = true;
         free_submit_buttons();
 
+        const requestObject = {
+            ticketNo: data.ticketNo,
+            jiraDomain: loadedConfigs['globals'].jiraDomain,
+            jiraToken: loadedConfigs['globals'].jiraToken,
+            jiraEmail: loadedConfigs['globals'].jiraEmail,
+            accountId: data.assignee.arg[0],
+        }
+        window.zendit.send('assign-jira-ticket', requestObject)
         
     }
 
@@ -237,5 +296,13 @@ window.zendit.receive('github-users-got', (data) => {
 })
 
 window.zendit.receive('review-requested', (data) => {
-    console.log(data)
+    if (data.status != 201) {
+        alert('PR review request failed.')
+    }
+})
+
+window.zendit.receive('jira-ticket-assigned', (data) => {
+    if (data.status != 204) {
+        alert('Failed to reassign ticket.')
+    }
 })

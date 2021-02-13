@@ -21,7 +21,7 @@ html(lang='en')
             datalist#githubUsers
             datalist#jiraUsers
             .row
-                .col-4
+                .col-3
                     .form-group
                         label(for="selectRepository") Repository
 
@@ -40,7 +40,7 @@ html(lang='en')
                     .form-group
                         label(for="tbxReviewer") PR reviewer
                         input#tbxReviewer.form-control(type="text", name="tbxReviewer" list="githubUsers")
-                .col-8
+                .col-9
                     .form-group
                         label(for="tbxPRTitle") Title
                         input#tbxPRTitle.form-control(type="text", name="pr-title")
@@ -49,11 +49,15 @@ html(lang='en')
                         textarea#tbxPR.form-control(name="pr-description", rows="12")
 
             .row
-                .col-4
+                .col-3
                     .form-group
-                        label(for="jira-user") Assign ticket to
-                        input#jira-user.form-control(type="text", name="jira-user" list="jiraUsers")
-                .col-8
+                        label(for="tbxJiraUser") Assign ticket to
+                        input#tbxJiraUser.form-control(type="text", name="tbxJiraUser" list="jiraUsers")
+                    .form-group
+                        label(for="tbxJiraGroup") Visible to 
+                        input#tbxJiraGroup.form-control(type="text", name="tbxJiraGroup" value="Zoocha")
+                        
+                .col-9
                     .form-group
                         label(for="tbxJiraComment") Jira comment
                         textarea#tbxJiraComment(name="tbxJiraComment", cols="30", rows="10")
@@ -70,7 +74,7 @@ html(lang='en')
                         .col
                             .custom-control.custom-switch.mt-2
                                 input#cbxCommentCreated.custom-control-input(type="checkbox", name="cbxCommentCreated" disabled)
-                                label.custom-control-label(for="cbxCommentCreated") Comment created
+                                label.custom-control-label(for="cbxCommentCreated") Jira comment
 
 
         script

@@ -22,7 +22,6 @@ ipcMain.on('select-directory', async (event, arg) => {
 })
 
 ipcMain.on('get-branches', async (event, path) => {
-    win = BrowserWindow.getFocusedWindow();
     exec ('cd ' + path + ' && git branch', (err, stdout, stderr) => {
         if (err) {
             throw err;

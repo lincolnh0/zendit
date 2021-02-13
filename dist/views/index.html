@@ -16,7 +16,7 @@
       <datalist id="githubUsers"></datalist>
       <datalist id="jiraUsers"></datalist>
       <div class="row">
-        <div class="col-4">
+        <div class="col-3">
           <div class="form-group">
             <label for="selectRepository">Repository</label>
             <div class="input-group">
@@ -39,7 +39,7 @@
             <input class="form-control" id="tbxReviewer" type="text" name="tbxReviewer" list="githubUsers">
           </div>
         </div>
-        <div class="col-8">
+        <div class="col-9">
           <div class="form-group">
             <label for="tbxPRTitle">Title</label>
             <input class="form-control" id="tbxPRTitle" type="text" name="pr-title">
@@ -51,13 +51,17 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-4">
+        <div class="col-3">
           <div class="form-group">
-            <label for="jira-user">Assign ticket to</label>
-            <input class="form-control" id="jira-user" type="text" name="jira-user" list="jiraUsers">
+            <label for="tbxJiraUser">Assign ticket to</label>
+            <input class="form-control" id="tbxJiraUser" type="text" name="tbxJiraUser" list="jiraUsers">
+          </div>
+          <div class="form-group">
+            <label for="tbxJiraGroup">Visible to </label>
+            <input class="form-control" id="tbxJiraGroup" type="text" name="tbxJiraGroup" value="Zoocha">
           </div>
         </div>
-        <div class="col-8">
+        <div class="col-9">
           <div class="form-group">
             <label for="tbxJiraComment">Jira comment</label>
             <textarea id="tbxJiraComment" name="tbxJiraComment" cols="30" rows="10"></textarea>
@@ -75,7 +79,7 @@
             <div class="col">
               <div class="custom-control custom-switch mt-2">
                 <input class="custom-control-input" id="cbxCommentCreated" type="checkbox" name="cbxCommentCreated" disabled>
-                <label class="custom-control-label" for="cbxCommentCreated">Comment created</label>
+                <label class="custom-control-label" for="cbxCommentCreated">Jira comment</label>
               </div>
             </div>
           </div>

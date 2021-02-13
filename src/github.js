@@ -2,20 +2,9 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 
 const { Octokit } = require("@octokit/core");
 
-
+const debug = true
 
 ipcMain.on('create-pr', async (event, arg) => {
-
-    
-    // win.webContents.send('pr-created', {
-    //     status: 201,
-    //     prLink: 'https://goog;e/com',
-    //     prNumber: 'githubResponse.data.number',
-    //     owner: 'arg.owner',
-    //     repo: 'arg.repo',
-    // })
-
-    // return;
     const octokit = new Octokit({ auth: arg.githubToken });
     const githubResponse = await octokit.request('POST /repos/{owner}/{repo}/pulls', {
         owner: arg.owner,
