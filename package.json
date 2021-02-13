@@ -46,7 +46,9 @@
   },
   "dependencies": {
     "@octokit/core": "^3.2.5",
-    "electron-squirrel-startup": "^1.0.0"
+    "adf-builder": "^3.3.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "js-yaml": "^4.0.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "6.0.0-beta.52",

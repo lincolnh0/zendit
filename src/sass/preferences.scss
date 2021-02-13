@@ -1,0 +1,18 @@
+@import 'index.scss';
+
+body {
+    background-color: $layered;
+}
+
+.nav-link:hover {
+    cursor: pointer;
+    color: $light_primary;
+}
+
+.form-floating label {
+    color: $layered;
+}
+
+.input-group .btn-outline-secondary.btn-danger {
+    color: $light_primary;
+}
