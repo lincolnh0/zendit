@@ -10,7 +10,8 @@ Download the release or compile it yourself.
 You will need both a Jira API token and a Github token with writing permissions to repos and/or organizations repo.
 
 ## Comparison 
-Traditional workflow of 
+
+#### Traditional workflow of 
 1. pushing local changes on terminal
 2. open a pull request on Github
 3. edit repo's PR template / paste + edit own template
@@ -23,7 +24,7 @@ Traditional workflow of
 
 Takes around 1.5 minute by a very prepared user (me)
 
-New workflow
+#### New workflow
 1. push local change on terminal
 2. choose head branch from ui
 3. edit own PR template
@@ -32,7 +33,7 @@ New workflow
 6. assign issue to reviewer
 7. publish
 
-Takes around 20 seconds, minus the slowing down from loading both webistes.
+Takes around 20 seconds, minus the slowing down from loading both websites.
 
 ## Roadmap
 - [ ] Implement regex for converting branch names to issue keys
