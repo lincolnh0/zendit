@@ -2,7 +2,7 @@
 Zendit is an attempt to loosely integrate workflow that implements both Jira and Github. Through a single interface, pull requests can be drafted and an automatic comment will be made tagging the code reviewer on the respective Jira ticket.
 
 ## Framework
-This project is built using electronJS with usage of both Bootstrap 4 and 5 on the front end. 
+This project is built using electronJS with both Bootstrap 4 and 5 on the front end. 
 
 ## Pre-requisites + installation
 Download the release or compile it yourself.
