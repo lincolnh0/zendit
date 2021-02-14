@@ -4,6 +4,11 @@ Zendit is an attempt to loosely integrate workflow that implements both Jira and
 ## Framework
 This project is built using electronJS with usage of both Bootstrap 4 and 5 on the front end. 
 
+## Pre-requisites + installation
+Download the release or compile it yourself.
+
+You will need both a Jira API token and a Github token with writing permissions to repos and/or organizations repo.
+
 ## Comparison 
 Traditional workflow of 
 1. pushing local changes on terminal
