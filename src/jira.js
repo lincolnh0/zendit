@@ -73,6 +73,16 @@ function recursive_build_document(content, tokens=null, doc=null) {
 
 ipcMain.on('create-jira-comment', async (event, arg) => {
 
+  if (debug) {
+    setTimeout(() => {
+      win.webContents.send('jira-comment-created', {
+        status:201
+      })
+
+    }, 500);
+    return;
+  }
+
   const comment = recursive_build_document(arg.body, arg.tokens);
   const requestObject = {
     requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/comment',
@@ -106,6 +116,17 @@ ipcMain.on('create-jira-comment', async (event, arg) => {
 
 ipcMain.on('get-jira-users', async (event, arg) => {
   win = BrowserWindow.getFocusedWindow()
+
+  if (debug) {
+    win.webContents.send('jira-users-got', {
+      users: [{
+      id: 1,
+      name: 'Lincoln',}]
+    })
+    return;
+  }
+  
+
   const requestObject = {
     requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/users/search?maxResults=2000',
     jiraEmail: arg.jiraEmail,
@@ -132,6 +153,17 @@ ipcMain.on('get-jira-users', async (event, arg) => {
 })
 
 ipcMain.on('assign-jira-ticket', async (event, arg) => {
+
+  if (debug) {
+    setTimeout(() => {
+      win.webContents.send('jira-ticket-assigned', {
+        status: 201
+      } )
+
+    }, 500);
+    return;
+  }
+
   const requestObject = {
     requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/assignee',
     requestMethod: 'PUT',
