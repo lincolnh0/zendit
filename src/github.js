@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 
 const { Octokit } = require("@octokit/core");
 
-const debug = true
+const debug = false
 
 ipcMain.on('create-pr', async (event, arg) => {
 
