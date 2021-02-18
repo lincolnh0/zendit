@@ -20,6 +20,8 @@ function add_event_listeners_to_form() {
 }
 
 ready(add_event_listeners_to_form)
+
+// Global config storage in memory, instead of loading files on runtime.
 let loadedConfigs = {}
 
 function populate_repositories() {
@@ -27,6 +29,8 @@ function populate_repositories() {
 
 }
 
+
+// Request local branch.
 function populate_branches() {
     
     tbxSourceBranch.value = '';
@@ -52,6 +56,7 @@ function populate_branches() {
     window.zendit.send('get-branches', loadedConfigs[selectRepository.value].directory)
 }
 
+// Requests jira users.
 function populate_jira_users() {
     window.zendit.send('get-jira-users', {
         jiraDomain: loadedConfigs['globals'].jiraDomain,
@@ -60,11 +65,9 @@ function populate_jira_users() {
     })
 }
 
+// Request github users.
 function populate_github_users() {
     if (githubUsers.dataset.owner != loadedConfigs[selectRepository.value].owner) {
-        while (githubUsers.firstChild) {
-            githubUsers.removeChild(githubUsers.lastChild)
-        }
         githubUsers.dataset.owner = loadedConfigs[selectRepository.value].owner;
         window.zendit.send('get-github-users', {
             owner: loadedConfigs[selectRepository.value].owner,
@@ -73,6 +76,7 @@ function populate_github_users() {
     }
 }
 
+// Fill title when a head branch is selected.
 function autofill_title() {
     branchList.childNodes.forEach((element) => {
         if (tbxHeadBranch.value == element.value) {
@@ -81,6 +85,7 @@ function autofill_title() {
     })
 }
 
+// TODO: obtains a token mapping.
 function return_token_object() {
     return {
         ticketNo: regex_branch_to_ticket(tbxHeadBranch.value),
@@ -88,6 +93,8 @@ function return_token_object() {
     }
 }
 
+
+// Submits PR via github api.
 function submit_pr() {
     if (tbxHeadBranch.value != tbxSourceBranch.value) {
         // Prepare ui to prevent double entry + feedback
@@ -113,6 +120,7 @@ function submit_pr() {
     }
 }
 
+// Breaking down Jira comment from raw html to a { node_type: content } nested array
 function child_nodes_recursive(elem) {
     if (elem.childNodes.length > 0) {
         
@@ -132,6 +140,7 @@ function child_nodes_recursive(elem) {
     
 }
 
+// Creates jira comment via jira api
 function submit_jira_comment(data) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(CKEDITOR.instances['tbxJiraComment'].getData(), 'text/html')
@@ -166,11 +175,12 @@ function submit_jira_comment(data) {
 
 }
 
-
+// TODO: apply stored regex to branch name to get ticket number
 function regex_branch_to_ticket(branch) {
     return branch.split('/')[0];
 }
 
+// Re-enable submit buttons.
 function free_submit_buttons() {
     setTimeout(() => {
         btnSubmit.disabled = false;
@@ -256,7 +266,7 @@ window.zendit.receive('pr-created', (data) => {
 })
 
 
-// On PR creation
+// On comment creation
 window.zendit.receive('jira-comment-created', (data) => {
     // UI feedback.
     if (data.status == 201) {
@@ -278,7 +288,11 @@ window.zendit.receive('jira-comment-created', (data) => {
     
 })
 
+// On jira users list fetched.
 window.zendit.receive('jira-users-got', (data) => {
+    while (jiraUsers.firstChild) {
+        jiraUsers.removeChild(githubUsers.lastChild)
+    }
     for (const index in data.users) {
         jiraUserOption = document.createElement('option');
         jiraUserOption.value = data.users[index].name;
@@ -287,7 +301,11 @@ window.zendit.receive('jira-users-got', (data) => {
     }
 })
 
+// On github users list fetched.
 window.zendit.receive('github-users-got', (data) => {
+    while (githubUsers.firstChild) {
+        githubUsers.removeChild(githubUsers.lastChild)
+    }
     data.data.forEach((user) => {
         githubUserOption = document.createElement('option');
         githubUserOption.value = user.login;
@@ -295,13 +313,17 @@ window.zendit.receive('github-users-got', (data) => {
     })
 })
 
+// On github PR review success
 window.zendit.receive('review-requested', (data) => {
+    // Currently don't have any ui feedback regarding successful review request, only reports error.
     if (data.status != 201) {
         alert('PR review request failed.')
     }
 })
 
+// On ticket reassignment success
 window.zendit.receive('jira-ticket-assigned', (data) => {
+    // Currently don't have any ui feedback regarding successful reassignment request, only reports error.
     if (data.status != 204) {
         alert('Failed to reassign ticket.')
     }
