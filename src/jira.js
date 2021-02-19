@@ -71,6 +71,20 @@ function recursive_build_document(content, tokens=null, doc=null) {
   return doc.toString();
 }
 
+async function call_jira_api(data) {
+  let apiResponse = await fetch(data.requestURL, {
+    method: data.requestMethod,
+    headers: {
+        'Authorization': `Basic ${Buffer.from(data.jiraEmail + ':' + data.jiraToken).toString('base64')}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+    },
+    body: data.requestBody,
+  })
+  return apiResponse
+
+}
+
 ipcMain.on('create-jira-comment', async (event, arg) => {
 
   if (debug) {
@@ -83,14 +97,20 @@ ipcMain.on('create-jira-comment', async (event, arg) => {
     return;
   }
 
+  // Build adf format comments from html markup.
   const comment = recursive_build_document(arg.body, arg.tokens);
+
+  let visibilityString = ''
+  if (arg.visibility != '_none') {
+    visibilityString = `"visibility": {"type": "group", "value": "${ arg.visibility }" },`
+  }
   const requestObject = {
     requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/comment',
     jiraEmail: arg.jiraEmail,
     jiraToken: arg.jiraToken,
     requestMethod: 'POST',
     // jsdPublic is the boolean for support desk tickets.
-    requestBody: `{ "visibility": {"type": "group", "value": "${ arg.visibility }" }, "body": ${ comment }}`,
+    requestBody: `{ ${visibilityString} "body": ${ comment }}`,
   }
 
   call_jira_api(requestObject)
@@ -173,22 +193,62 @@ ipcMain.on('assign-jira-ticket', async (event, arg) => {
   }
 
   const apiResonse  =  await call_jira_api(requestObject)
-  const responseOBject = await apiResonse.text();
-  if (responseOBject.status == 204) {
-    win.webContents.send('jira-ticket-assigned', responseOBject);
+  const responseObject = await apiResonse.text();
+  if (responseObject.status == 204) {
+    win.webContents.send('jira-ticket-assigned', responseObject);
   }
 })
 
-async function call_jira_api(data) {
-  let apiResponse = await fetch(data.requestURL, {
-    method: data.requestMethod,
-    headers: {
-        'Authorization': `Basic ${Buffer.from(data.jiraEmail + ':' + data.jiraToken).toString('base64')}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-    },
-    body: data.requestBody,
-  })
-  return apiResponse
+ipcMain.on('get-jira-transitions', async (event, arg) => {
+  const requestObject = {
+    requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/transitions',
+    requestMethod: 'GET',
+    jiraEmail: arg.jiraEmail,
+    jiraToken: arg.jiraToken,
+  }
 
-}
+  const apiResonse  =  await call_jira_api(requestObject)
+  const respoonseBody = await apiResonse.text()
+  if (apiResonse.status == 200) {
+    win.webContents.send('jira-transitions-got', {
+      transitions: JSON.parse(respoonseBody).transitions,
+    });
+
+  }
+      
+})
+
+// Requests all groups the user of the token API belongs in.
+ipcMain.on('get-jira-groups', async (event, arg) => {
+  const myselfRequestObject = {
+    requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/myself',
+    requestMethod: 'GET',
+    jiraEmail: arg.jiraEmail,
+    jiraToken: arg.jiraToken,
+  }
+
+  const myselfApiResonse  =  await call_jira_api(myselfRequestObject)
+  const myselfRespoonseBody = await myselfApiResonse.text()
+  if (myselfApiResonse.status == 200) {
+    myselfResponseObject = JSON.parse(myselfRespoonseBody)
+
+    accountId = myselfResponseObject.accountId;
+
+    const groupRequestObject = {
+      requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/user/groups?accountId=' + accountId,
+      requestMethod: 'GET',
+      jiraEmail: arg.jiraEmail,
+      jiraToken: arg.jiraToken,
+    }
+
+    const groupApiResponse = await call_jira_api(groupRequestObject)
+    const groupResponseBody = await groupApiResponse.text()
+
+    if (groupApiResponse.status == 200) {
+      win.webContents.send('jira-groups-got', {
+        groups: JSON.parse(groupResponseBody)
+      })
+    }
+
+  }
+})

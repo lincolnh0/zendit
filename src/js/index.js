@@ -26,7 +26,6 @@ let loadedConfigs = {}
 
 function populate_repositories() {
     window.zendit.send('get-settings', { repo: 'globals', init: true });
-
 }
 
 
@@ -65,6 +64,15 @@ function populate_jira_users() {
     })
 }
 
+
+function populate_jira_groups() {
+    window.zendit.send('get-jira-groups', {
+        jiraDomain: loadedConfigs['globals'].jiraDomain,
+        jiraToken: loadedConfigs['globals'].jiraToken,
+        jiraEmail: loadedConfigs['globals'].jiraEmail,
+    })
+}
+
 // Request github users.
 function populate_github_users() {
     if (githubUsers.dataset.owner != loadedConfigs[selectRepository.value].owner) {
@@ -82,6 +90,14 @@ function autofill_title() {
         if (tbxHeadBranch.value == element.value) {
             tbxPRTitle.value = tbxHeadBranch.value;
         }
+    })
+
+    // Retreive ticket transitions from title.
+    window.zendit.send('get-jira-transitions', {
+        jiraDomain: loadedConfigs['globals'].jiraDomain,
+        jiraToken: loadedConfigs['globals'].jiraToken,
+        jiraEmail: loadedConfigs['globals'].jiraEmail,
+        ticketNo: regex_branch_to_ticket(tbxHeadBranch.value),
     })
 }
 
@@ -150,7 +166,7 @@ function submit_jira_comment(data) {
         jiraDomain: loadedConfigs['globals'].jiraDomain,
         jiraToken: loadedConfigs['globals'].jiraToken,
         jiraEmail: loadedConfigs['globals'].jiraEmail,
-        visibility: tbxJiraGroup.value,
+        visibility: selectJiraGroup.value,
         body: bodyObject,
         tokens: {
             prLink: {
@@ -215,6 +231,7 @@ window.zendit.receive('settings-got', (data) => {
         data.config.alias = 'Global'
         loadedConfigs[data.repo] = data.config;
         populate_jira_users()
+        populate_jira_groups()
     }
     else {
 
@@ -327,4 +344,35 @@ window.zendit.receive('jira-ticket-assigned', (data) => {
     if (data.status != 204) {
         alert('Failed to reassign ticket.')
     }
+})
+
+// Populate available transitions.
+window.zendit.receive('jira-transitions-got', (data) => {
+    while (selectTransition.firstChild) {
+        selectTransition.removeChild(selectTransition.lastChild)
+    }
+    data.transitions.forEach(transition => {
+        transitionOption = document.createElement('option')
+        transitionOption.value = transition.id
+        transitionOption.innerText = transition.name
+        selectTransition.appendChild(transitionOption)
+    })
+})
+
+window.zendit.receive('jira-groups-got', (data) => {
+    while (selectJiraGroup.firstChild) {
+        selectJiraGroup.removeChild(selectJiraGroup.lastChild)
+    }
+
+    groupOption = document.createElement('option')
+    groupOption.innerText = "None"
+    groupOption.value = "_none"
+    selectJiraGroup.appendChild(groupOption)
+
+    data.groups.forEach(group => {
+        groupOption = document.createElement('option')
+        groupOption.innerText = group.name
+        groupOption.value = group.name
+        selectJiraGroup.appendChild(groupOption)
+    })
 })

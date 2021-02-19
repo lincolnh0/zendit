@@ -53,12 +53,22 @@
       <div class="row">
         <div class="col-3">
           <div class="form-group">
+            <label for="selectTransition">Transition issue</label>
+            <select class="custom-select" id="selectTransition" type="text" name="selectTransition"></select>
+          </div>
+          <div class="form-group">
             <label for="tbxJiraUser">Assign ticket to</label>
             <input class="form-control" id="tbxJiraUser" type="text" name="tbxJiraUser" list="jiraUsers">
           </div>
-          <div class="form-group">
-            <label for="tbxJiraGroup">Visible to </label>
-            <input class="form-control" id="tbxJiraGroup" type="text" name="tbxJiraGroup">
+          <div class="form-row">
+            <div class="col form-group">
+              <label for="selectJiraGroup">Visible to </label>
+              <select class="custom-select" id="selectJiraGroup" type="text" name="selectJiraGroup"></select>
+            </div>
+            <div class="col form-group">
+              <label for="tbxTimelog">Time logged</label>
+              <input class="form-control" id="tbxTimelog" type="text" name="tbxTimelog">
+            </div>
           </div>
         </div>
         <div class="col-9">
