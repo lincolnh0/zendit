@@ -3,9 +3,9 @@ const fs = require("fs");
 const yaml = require('js-yaml');
 const { exec } = require('child_process')
 
-
 ipcMain.on('select-directory', async (event, arg) => {
     win = BrowserWindow.getFocusedWindow();
+    
     const result = await dialog.showOpenDialog(win, {
         properties: ['openDirectory'],
         defaultPath: app.getPath('home'),
@@ -22,6 +22,8 @@ ipcMain.on('select-directory', async (event, arg) => {
 })
 
 ipcMain.on('get-branches', async (event, path) => {
+    win = BrowserWindow.getFocusedWindow();
+
     exec ('cd ' + path + ' && git branch', (err, stdout, stderr) => {
         if (err) {
             throw err;

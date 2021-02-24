@@ -117,17 +117,25 @@ ipcMain.on('create-jira-comment', async (event, arg) => {
   .then((response) => {
 
     if (response.status == 201) {
-      const responseObj = {
+      const responseObject = {
         text: response.statusText,
         status: response.status,
         ticketNo: arg.ticketNo,
       }
   
       if ('assignee' in arg.tokens) {
-        responseObj.assignee = arg.tokens.assignee;
+        responseObject.assignee = arg.tokens.assignee;
+      }
+
+      if ('transition' in arg) {
+        responseObject.transition = arg.transition;
+      }
+
+      if ('timeSpent' in arg) {
+        responseObject.timeSpent = arg.timeSpent;
       }
   
-      win.webContents.send('jira-comment-created', responseObj);
+      win.webContents.send('jira-comment-created', responseObject);
     }
   })
   
@@ -184,7 +192,10 @@ ipcMain.on('assign-jira-ticket', async (event, arg) => {
     return;
   }
 
-  const requestObject = {
+  
+
+  // // Assign ticket.
+  let requestObject = {
     requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/assignee',
     requestMethod: 'PUT',
     jiraEmail: arg.jiraEmail,
@@ -192,10 +203,45 @@ ipcMain.on('assign-jira-ticket', async (event, arg) => {
     requestBody: `{ "accountId": "${arg.accountId}" }`, 
   }
 
-  const apiResonse  =  await call_jira_api(requestObject)
-  const responseObject = await apiResonse.text();
+  let apiResonse  =  await call_jira_api(requestObject)
+  let responseObject = await apiResonse.text();
   if (responseObject.status == 204) {
     win.webContents.send('jira-ticket-assigned', responseObject);
+  }
+
+  // // Perform transition.
+  requestObject = {
+    requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/transitions',
+    requestMethod: 'POST',
+    jiraEmail: arg.jiraEmail,
+    jiraToken: arg.jiraToken,
+    requestBody: `{ "transition": {"id": "${arg.transition}"} }`, 
+  }
+  apiResonse  =  await call_jira_api(requestObject)
+  responseObject = await apiResonse.text();
+  if (responseObject.status == 201) {
+    win.webContents.send('jira-ticket-transitioned', responseObject);
+  }
+
+  // Logs time.
+
+  timeParts = arg.timeSpent.match(/[0-9]+[.]?[0-9]+[h,m,d,s]/g)
+
+  startDate = new Date();
+    requestObject = {
+    requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/worklog',
+    requestMethod: 'POST',
+    jiraEmail: arg.jiraEmail,
+    jiraToken: arg.jiraToken,
+    requestBody: JSON.stringify({
+      timeSpent: timeParts.join(' '),
+      started: startDate.toISOString().replace('Z', '+0000')
+    }), 
+  }
+  apiResonse  =  await call_jira_api(requestObject)
+  responseObject = await apiResonse.text();
+  if (responseObject.status == 201) {
+    win.webContents.send('jira-time-logged', responseObject);
   }
 })
 

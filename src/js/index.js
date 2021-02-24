@@ -167,6 +167,8 @@ function submit_jira_comment(data) {
         jiraToken: loadedConfigs['globals'].jiraToken,
         jiraEmail: loadedConfigs['globals'].jiraEmail,
         visibility: selectJiraGroup.value,
+        transition: selectTransition.value,
+        timeSpent: tbxTimelog.value,
         body: bodyObject,
         tokens: {
             prLink: {
@@ -293,6 +295,8 @@ window.zendit.receive('jira-comment-created', (data) => {
 
         const requestObject = {
             ticketNo: data.ticketNo,
+            transition: data.transition,
+            timeSpent: data.timeSpent,
             jiraDomain: loadedConfigs['globals'].jiraDomain,
             jiraToken: loadedConfigs['globals'].jiraToken,
             jiraEmail: loadedConfigs['globals'].jiraEmail,
@@ -375,4 +379,16 @@ window.zendit.receive('jira-groups-got', (data) => {
         groupOption.value = group.name
         selectJiraGroup.appendChild(groupOption)
     })
+})
+
+window.zendit.receive('jira-ticket-transitioned', (data) => {
+    if (data.status != 201) {
+        alert('Failed to transition ticket.')
+    }
+})
+
+window.zendit.receive('jira-time-logged', (data) => {
+    if (data.status != 201) {
+        alert('Failed to transition ticket.')
+    }
 })

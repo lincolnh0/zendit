@@ -45,6 +45,8 @@ contextBridge.exposeInMainWorld(
                 'jira-ticket-assigned',
                 'jira-transitions-got',
                 'jira-groups-got',
+                'jira-ticket-transitioned',
+                'jira-time-logged',
             ];
             if (validChannels.includes(channel)) {
                 // Deliberately strip event as it includes `sender` 
