@@ -225,7 +225,7 @@ ipcMain.on('assign-jira-ticket', async (event, arg) => {
 
   // Logs time.
 
-  timeParts = arg.timeSpent.match(/[0-9]+[.]?[0-9]+[h,m,d,s]/g)
+  timeParts = arg.timeSpent.match(/[0-9]+([.]?[0-9]+)?[h,m,d,s]/g)
 
   startDate = new Date();
     requestObject = {
