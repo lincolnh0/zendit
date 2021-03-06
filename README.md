@@ -40,8 +40,8 @@ Takes around 20 seconds, minus the slowing down from loading both websites.
 ## Roadmap
 - [ ] Implement regex for converting branch names to issue keys
 - [ ] More extensive HTML to Jira's ADF parsing
-- [ ] Extend visibility option (currently limited to group)
-- [ ] Ability to log time on issue
+- [x] Extend visibility option (currently limited to group)
+- [x] Ability to log time on issue
 
 ## FAQ
 ### Any reason why I should switch?
