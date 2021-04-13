@@ -8,7 +8,9 @@ This project is built using electronJS with both Bootstrap 4 and 5 on the front 
 
 ## Pre-requisites + installation
 Download the release or compile it yourself.
+
 `yarn electron-packager .` - to package with electron-packager
+
 `yarn package` - to package with electro-forge
 
 You will need both a Jira API token and a Github token with writing permissions to repos and/or organizations repo.
