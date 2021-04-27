@@ -86,9 +86,13 @@ function populate_github_users() {
 
 // Fill title when a head branch is selected.
 function autofill_title() {
+    // For branch naming format ISSUE-KEY/branch-name
+
     branchList.childNodes.forEach((element) => {
         if (tbxHeadBranch.value == element.value) {
-            tbxPRTitle.value = tbxHeadBranch.value;
+            const issueKey = tbxHeadBranch.value.split('/')[0];
+            const branchName = tbxHeadBranch.value.split('/')[1];
+            tbxPRTitle.value = issueKey + ': ' + branchName.replaceAll('-', ' ');
         }
     })
 
