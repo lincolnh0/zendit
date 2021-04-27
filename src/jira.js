@@ -101,9 +101,22 @@ ipcMain.on('create-jira-comment', async (event, arg) => {
   const comment = recursive_build_document(arg.body, arg.tokens);
 
   let visibilityString = ''
-  if (arg.visibility != '_none') {
-    visibilityString = `"visibility": {"type": "group", "value": "${ arg.visibility }" },`
+  
+  if (arg.visibility == 'support') {
+    visibilityString = `
+    "properties": [
+      {
+        "key": "sd.public.comment",
+        "value": {
+          "internal": true
+        }
+      }
+    ],`
   }
+  else if (arg.visibility != '_none') {
+    visibilityString = `"visibility": {"type": "group", "value": "${ arg.visibility }" },`
+  } 
+
   const requestObject = {
     requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/comment',
     jiraEmail: arg.jiraEmail,
@@ -226,22 +239,23 @@ ipcMain.on('assign-jira-ticket', async (event, arg) => {
   // Logs time.
 
   timeParts = arg.timeSpent.match(/[0-9]+([.]?[0-9]+)?[h,m,d,s]/g)
-
-  startDate = new Date();
-    requestObject = {
-    requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/worklog',
-    requestMethod: 'POST',
-    jiraEmail: arg.jiraEmail,
-    jiraToken: arg.jiraToken,
-    requestBody: JSON.stringify({
-      timeSpent: timeParts.join(' '),
-      started: startDate.toISOString().replace('Z', '+0000')
-    }), 
-  }
-  apiResonse  =  await call_jira_api(requestObject)
-  responseObject = await apiResonse.text();
-  if (responseObject.status == 201) {
-    win.webContents.send('jira-time-logged', responseObject);
+  if (timeParts !== null) {
+    startDate = new Date();
+      requestObject = {
+      requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/worklog',
+      requestMethod: 'POST',
+      jiraEmail: arg.jiraEmail,
+      jiraToken: arg.jiraToken,
+      requestBody: JSON.stringify({
+        timeSpent: timeParts.join(' '),
+        started: startDate.toISOString().replace('Z', '+0000')
+      }), 
+    }
+    apiResonse  =  await call_jira_api(requestObject)
+    responseObject = await apiResonse.text();
+    if (responseObject.status == 201) {
+      win.webContents.send('jira-time-logged', responseObject);
+    }
   }
 })
 
