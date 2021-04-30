@@ -377,6 +377,12 @@ window.zendit.receive('jira-groups-got', (data) => {
     groupOption.value = "_none"
     selectJiraGroup.appendChild(groupOption)
 
+    // Internal option for support ciekts
+    groupOption = document.createElement('option')
+    groupOption.value = 'support'
+    groupOption.innerText = 'Internal note'
+    selectJiraGroup.appendChild(groupOption)
+    
     data.groups.forEach(group => {
         groupOption = document.createElement('option')
         groupOption.innerText = group.name
