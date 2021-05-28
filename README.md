@@ -1,7 +1,7 @@
 # Zendit
 Zendit is an attempt to loosely integrate workflow that implements both Jira and Github. Through a single interface, pull requests can be drafted and an automatic comment will be made tagging the code reviewer on the respective Jira ticket.
 
-![demo](./demo.png)
+![demo](./docs/demo.png)
 
 ## Framework
 This project is built using electronJS with both Bootstrap 4 and 5 on the front end. 
@@ -9,11 +9,23 @@ This project is built using electronJS with both Bootstrap 4 and 5 on the front 
 ## Pre-requisites + installation
 Download the release or compile it yourself.
 
+`npm install` or `yarn install` to install dependencies
+
 `yarn electron-packager .` - to package with electron-packager
 
-`yarn package` - to package with electro-forge
+`yarn package` or 
+`npm run package`  - to package with electro-forge
 
 You will need both a Jira API token and a Github token with writing permissions to repos and/or organizations repo.
+
+### Github token
+Generate here https://github.com/settings/tokens/new
+
+With these permissions so Zendit can access list of public and private organisation members.
+![gh](./docs/gh-perms.png)
+
+### Jira token
+Generate here https://id.atlassian.com/manage-profile/security/api-tokens
 
 ## Comparison 
 
@@ -46,6 +58,7 @@ Takes around 20 seconds, minus the slowing down from loading both websites.
 - [ ] More extensive HTML to Jira's ADF parsing
 - [x] Extend visibility option (currently limited to group)
 - [x] Ability to log time on issue
+- [ ] Code review and comment workflow
 
 ## FAQ
 ### Any reason why I should switch?
