@@ -109,6 +109,7 @@ function autofill_title() {
 function return_token_object() {
     return {
         ticketNo: regex_branch_to_ticket(tbxHeadBranch.value),
+        jiraDomain: loadedConfigs['globals'].jiraDomain,
 
     }
 }
@@ -124,7 +125,7 @@ function submit_pr() {
         
         // Preprocess tokens. need better implementation.
         tokenObj = return_token_object()
-        const processedBody = tbxPR.value.replace('[ticketNo]', tokenObj.ticketNo)
+        const processedBody = tbxPR.value.replace('[ticketNo]', tokenObj.ticketNo).replace('[jiraDomain]', tokenObj.jiraDomain)
         
         let requestObject = {
             githubToken: loadedConfigs['globals'].githubToken,

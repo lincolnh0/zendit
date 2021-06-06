@@ -20,8 +20,8 @@ html(lang='en')
                         i.fas.fa-users
                         span Accounts
                     a.nav-link(data-bs-target="#templates-tab", data-bs-toggle="pill") 
-                        i.fas.fa-code
-                        span Templates
+                        i.fas.fa-paste
+                        span Repositories
                     a.nav-link(data-bs-target="#add-new-repo-tab", data-bs-toggle="pill") 
                         i.fas.fa-plus-circle
                         span New repo
@@ -72,12 +72,22 @@ html(lang='en')
                             .col-6.mb-3
                                 label.form-label(for="tbxBranchRegex") Branch-ticket regex
                                 input#tbxBranchRegex.form-control(type="text", name="tbxBranchRegex" disabled placeholder="Coming soon")
+                        
+                        .row
+                            .col-6.mb-3
+                                label.form-label(for="tbxEditRepoURL") URL
+                                input#tbxEditRepoURL.form-control(type="text", name="tbxEditRepoURL")
+                            .col-6.mb-3
+                                label.form-label(for="tbxEditDirectory") Directory
+                                input#tbxEditDirectory.form-control(type="text", name="tbxEditDirectory")
+                                
+
                         .row
                             .col.mb-3
                                 label(for="pr-template") Pull request template
                                 textarea#pr-template.form-control(name="pr-template", rows="13")
                                 .form-text
-                                    p Available tokens: <code>[ticketNo]</code>
+                                    p Available tokens: <code>[ticketNo]</code>, <code>[jiraDomain]</code>
                         
                             .col.mb-3
                                 label(for="jira-comment-template") Jira comment template
@@ -90,10 +100,7 @@ html(lang='en')
                                 span Save
                             button#btnResetTemplate.btn.btn-light.col-2(type="button")
                                 i.fas.fa-sync-alt
-                                span Reset
-                            
-                        
-                    
+                                span Reset                    
                     #add-new-repo-tab.tab-pane
                         .mb-3
                             label.form-label(for="tbxDirectory") Directory

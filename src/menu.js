@@ -13,7 +13,7 @@ const template = [
             click(item, focusedWindow) {
                 const settingsWindow = new BrowserWindow({
                     width: 1000, 
-                    height: 650,
+                    height: 750,
                     alwaysOnTop: true,
                     autoHideMenuBar: true,
                     skipTaskbar: true,

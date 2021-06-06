@@ -21,7 +21,7 @@ function add_event_listeners_to_form() {
     btnSelectDirectory.addEventListener('click', () => {window.zendit.send('select-directory')})
 
 
-    selectRepository.addEventListener('change', (e) => update_templates())
+    selectRepository.addEventListener('change', (e) => update_repo_information())
 
     window.zendit.send('get-settings', { repo: 'globals', init: true });
 }
@@ -58,9 +58,17 @@ function save_templates(e) {
         buttonNode = e.target.parentNode;
     }
     buttonNode.disabled = true;
+
+    const repoUrl = document.getElementById('tbxEditRepoURL').value.split('/');
+    const repoName = repoUrl.pop()
+    const repoOwner = repoUrl.pop()
+
     const configObject = {
         repo: selectRepository.value,
         config: {
+            directory: document.getElementById('tbxEditDirectory').value,
+            owner: repoOwner,
+            repo: repoName,
             prTemplate: document.getElementById('pr-template').value,
             commentTemplate: CKEDITOR.instances['jira-comment-template'].getData(),
             branchRegex: tbxBranchRegex.value
@@ -151,19 +159,38 @@ function toggle_token_fields(e, id) {
 }
 
 // Show selected repo's template
-function update_templates() {
+function update_repo_information() {
     if ('branchRegex' in loadedConfigs[selectRepository.value]) {
         // tbxBranchRegex.value = loadedConfigs[selectRepository.value].branchRegex;
     }
     else {
         // tbxBranchRegex.value = loadedConfigs.globals.branchRegex;
     }
+    if (selectRepository.value !== 'globals') {
+        if ('owner' in loadedConfigs[selectRepository.value] && 'repo' in loadedConfigs[selectRepository.value]) {
+            document.getElementById('tbxEditRepoURL').value = loadedConfigs[selectRepository.value].owner + '/' + loadedConfigs[selectRepository.value].repo;
+        }
+    
+        if ('directory' in loadedConfigs[selectRepository.value]) {
+            document.getElementById('tbxEditDirectory').value = loadedConfigs[selectRepository.value].directory;
+        }
+    }
+    else {
+        tbxEditRepoURL.value = '';
+        tbxEditDirectory.value = '';
+    }
+
+    tbxEditRepoURL.disabled = selectRepository.value === 'globals';
+    tbxEditDirectory.disabled = selectRepository.value === 'globals';
+
+
     if ('prTemplate' in loadedConfigs[selectRepository.value]) {
         document.getElementById('pr-template').value = loadedConfigs[selectRepository.value].prTemplate;
     }
     else {
         document.getElementById('pr-template').value = loadedConfigs.globals.prTemplate;
     }
+
     if ('commentTemplate' in loadedConfigs[selectRepository.value]) {
         CKEDITOR.instances['jira-comment-template'].setData(loadedConfigs[selectRepository.value].commentTemplate);
     }
@@ -191,7 +218,7 @@ window.zendit.receive('settings-got', (data) => {
 
     }
     loadedConfigs[data.repo] = data.config
-    update_templates()
+    update_repo_information()
 
 })
 
