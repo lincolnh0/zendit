@@ -26,6 +26,8 @@ contextBridge.exposeInMainWorld(
                 'assign-jira-ticket',
                 'get-jira-transitions',
                 'get-jira-groups',
+                'remove-repository',
+                'prompt',
             ];
             if (validChannels.includes(channel)) {
                 ipcRenderer.send(channel, data);
@@ -47,6 +49,7 @@ contextBridge.exposeInMainWorld(
                 'jira-groups-got',
                 'jira-ticket-transitioned',
                 'jira-time-logged',
+                'reload'
             ];
             if (validChannels.includes(channel)) {
                 // Deliberately strip event as it includes `sender` 

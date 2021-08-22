@@ -122,7 +122,9 @@ ipcMain.on('get-settings', async (event, arg) => {
 })
 
 // Save settings to user data path.
-ipcMain.on('save-settings', async (event, arg) => {
+ipcMain.on('save-settings', saveSettings);
+
+async function saveSettings (event, arg) {
     let configFile = app.getPath('userData');
     switch (arg.repo) {
         case 'globals':
@@ -132,17 +134,31 @@ ipcMain.on('save-settings', async (event, arg) => {
             configFile += '/repos/' + arg.repo + '.yml'
             break;
     }
-    
+
     let combinedConfig = arg.config;
     // Merge new settings to unchanged previous settings.
     if (fs.existsSync(configFile) && arg.force_overwrite == false) {
         const existingConfig = yaml.load(fs.readFileSync(configFile, 'utf8'));
         combinedConfig = Object.assign(existingConfig, arg.config);   
     }
+
     fs.writeFileSync(configFile, yaml.dump(combinedConfig), (err) => {
         if (err) {
             console.log(err);
         }
     })
-    event.sender.send('settings-saved', { repo: arg.repo, trigger: arg.trigger });
+
+
+    if ('alias' in arg.config) {
+        event.sender.send('reload');
+    } else {   
+        event.sender.send('settings-saved', { repo: arg.repo, trigger: arg.trigger });
+    }
+}
+
+
+ipcMain.on('remove-repository', async (event, arg) => {
+
+    fs.unlinkSync(app.getPath('userData') + '/repos/' + arg + '.yml');
+    event.sender.send('reload');
 })
