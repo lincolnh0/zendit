@@ -30,7 +30,7 @@ const template = [
                 })
                 settingsWindow.once('ready-to-show', () => {
                   settingsWindow.show()
-                  settingsWindow.toggleDevTools();
+                  // settingsWindow.toggleDevTools();
                 })
             }
           },
