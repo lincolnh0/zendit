@@ -19,9 +19,7 @@
               <label class="form-label" for="github-api-token">Github API token</label>
               <div class="input-group">
                 <input class="form-control" id="github-api-token" type="password" name="github-api-token" placeholder="Github API token">
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary btn-light" id="btnShowGithub" data-target="github-api-token"><i class="fas fa-eye"></i></button>
-                </div>
+                <button class="btn btn-outline-secondary btn-light" id="btnShowGithub" data-target="github-api-token"><i class="fas fa-eye"></i></button>
               </div>
             </div>
             <div class="row">
@@ -38,13 +36,11 @@
                 </div>
               </div>
             </div>
-            <div class="mb-5">
+            <div class="mb-3">
               <label class="form-label" for="jira-api-token">Jira API token</label>
               <div class="input-group">
                 <input class="form-control" id="jira-api-token" type="password" name="jira-api-token" placeholder="Jira API token">
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary btn-light" id="btnShowJira" data-target="jira-api-token"> <i class="fas fa-eye"></i></button>
-                </div>
+                <button class="btn btn-outline-secondary btn-light" id="btnShowJira" data-target="jira-api-token"> <i class="fas fa-eye"></i></button>
               </div>
             </div>
             <button class="btn btn-success col-2" id="btnSaveAccount" type="button"><i class="fas fa-save"> </i><span>Save</span></button>
@@ -55,7 +51,7 @@
                 <label class="form-label" for="selectRepository">Repository</label>
                 <div class="input-group">
                   <select class="form-select" id="selectRepository"></select>
-                  <button class="btn btn-outline-secondary btn-danger" id="btnRemoveRepository"><i class="fas fa-trash-alt"></i></button>
+                  <button class="btn btn-outline-secondary btn-danger" id="btnRemoveRepository"><i class="fas fa-trash-alt">                                        </i></button>
                 </div>
               </div>
               <div class="col-6 mb-3">
@@ -65,9 +61,9 @@
             </div>
             <div class="row">
               <div class="col-6 mb-3">
-                <label class="form-label" for="tbxEditRepoURL">URL</label>
-                <div class="input-group"><span class="input-group-text">https://github.com/</span>
-                  <input class="form-control" id="tbxEditRepoURL" type="text" name="tbxEditRepoURL">
+                <label class="form-label" for="tbxEditRepoAlias">Alias</label>
+                <div class="input-group">
+                  <input class="form-control" id="tbxEditRepoAlias" type="text" name="tbxEditRepoAlias">
                 </div>
               </div>
               <div class="col-6 mb-3">

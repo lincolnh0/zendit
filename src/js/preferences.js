@@ -60,16 +60,13 @@ function save_templates(e) {
     }
     buttonNode.disabled = true;
 
-    const repoUrl = document.getElementById('tbxEditRepoURL').value.split('/');
-    const repoName = repoUrl.pop()
-    const repoOwner = repoUrl.pop()
+    const repoAlias = document.getElementById('tbxEditRepoAlias').value;
 
     const configObject = {
         repo: selectRepository.value,
         config: {
             directory: document.getElementById('tbxEditDirectory').value,
-            owner: repoOwner,
-            repo: repoName,
+            alias: repoAlias,
             prTemplate: document.getElementById('pr-template').value,
             commentTemplate: CKEDITOR.instances['jira-comment-template'].getData(),
             branchRegex: tbxBranchRegex.value
@@ -173,8 +170,8 @@ function update_repo_information() {
         // tbxBranchRegex.value = loadedConfigs.globals.branchRegex;
     }
     if (selectRepository.value !== 'globals') {
-        if ('owner' in loadedConfigs[selectRepository.value] && 'repo' in loadedConfigs[selectRepository.value]) {
-            document.getElementById('tbxEditRepoURL').value = loadedConfigs[selectRepository.value].owner + '/' + loadedConfigs[selectRepository.value].repo;
+        if ('alias' in loadedConfigs[selectRepository.value]) {
+            document.getElementById('tbxEditRepoAlias').value = loadedConfigs[selectRepository.value].alias;
         }
     
         if ('directory' in loadedConfigs[selectRepository.value]) {
@@ -182,11 +179,10 @@ function update_repo_information() {
         }
     }
     else {
-        tbxEditRepoURL.value = '';
         tbxEditDirectory.value = '';
     }
 
-    tbxEditRepoURL.disabled = selectRepository.value === 'globals';
+    tbxEditRepoAlias.disabled = selectRepository.value === 'globals';
     tbxEditDirectory.disabled = selectRepository.value === 'globals';
 
 
@@ -208,6 +204,16 @@ function update_repo_information() {
 // Allows user to remove existing repository.
 function remove_repository() {
     window.zendit.send('remove-repository', selectRepository.value);
+}
+
+function rename_repository() {
+    window.zendit.send('prompt', {
+        title: 'Rename ' + loadedConfigs[selectRepository.value].alias,
+        content: 'Please enter the new alias for this repository',
+        value: loadedConfigs[selectRepository.value].alias,
+        config: loadedConfigs[selectRepository.value],
+        type: 'rename',
+    });
 }
 
 // Populate fields with retrieved settings
@@ -270,7 +276,7 @@ window.zendit.receive('directory-selected', (data) => {
     
 })
 
-window.zendit.receive('repository-removed', () => {
+window.zendit.receive('reload', () => {
     delete loadedConfigs[selectRepository.value];
     location.reload();
 })
