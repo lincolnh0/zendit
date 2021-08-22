@@ -66,7 +66,6 @@ function save_templates(e) {
         repo: selectRepository.value,
         config: {
             directory: document.getElementById('tbxEditDirectory').value,
-            alias: repoAlias,
             prTemplate: document.getElementById('pr-template').value,
             commentTemplate: CKEDITOR.instances['jira-comment-template'].getData(),
             branchRegex: tbxBranchRegex.value
@@ -74,6 +73,12 @@ function save_templates(e) {
         trigger: buttonNode.id,
         force_overwrite: false,
     }
+
+
+    if (loadedConfigs[selectRepository.value].alias !== tbxEditRepoAlias.value) {        
+        configObject.config.alias = tbxEditRepoAlias.value;
+    }
+
 
     
     window.zendit.send('save-settings', configObject);
