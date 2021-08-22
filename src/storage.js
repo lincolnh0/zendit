@@ -4,7 +4,6 @@ const yaml = require('js-yaml');
 const { exec } = require('child_process')
 
 ipcMain.on('select-directory', async (event, arg) => {
-    win = BrowserWindow.getFocusedWindow();
     
     const result = await dialog.showOpenDialog(win, {
         properties: ['openDirectory'],
@@ -16,13 +15,12 @@ ipcMain.on('select-directory', async (event, arg) => {
         eligible: fs.existsSync(result.filePaths + '/.git'),
     }
 
-    win.webContents.send('directory-selected', responseObj);
+    event.sender.send('directory-selected', responseObj);
         
     
 })
 
 ipcMain.on('get-branches', async (event, path) => {
-    win = BrowserWindow.getFocusedWindow();
 
     exec ('cd ' + path + ' && git branch', (err, stdout, stderr) => {
         if (err) {
@@ -32,7 +30,7 @@ ipcMain.on('get-branches', async (event, path) => {
             const responseObj = {
                 branches: stdout.split('\n'),
             }
-            win.webContents.send('branches-got', responseObj)
+            event.sender.send('branches-got', responseObj)
         }
         
     });

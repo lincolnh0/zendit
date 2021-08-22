@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { Document } = require('adf-builder');
 const fetch = require('node-fetch');
 
-const debug = false
+const debug = true
 
 function token_replace(content, tokens, component) {
   for (const token in tokens) {

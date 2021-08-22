@@ -135,6 +135,7 @@ function submit_pr() {
             source: tbxSourceBranch.value,
             title: tbxPRTitle.value,
             body: processedBody,
+            directory: loadedConfigs[selectRepository.value].directory,
         }
 
         window.zendit.send('create-pr', requestObject);
