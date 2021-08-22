@@ -140,6 +140,14 @@ function submit_pr() {
 
         window.zendit.send('create-pr', requestObject);
     }
+
+    // Stored last active repo in global config.
+    loadedConfigs['globals'].lastRepo = selectRepository.value;
+    window.zendit.send('save-settings', {
+        repo: 'globals', 
+        config: loadedConfigs['globals'], 
+        force_overwrite: false,
+    });
 }
 
 // Breaking down Jira comment from raw html to a { node_type: content } nested array
@@ -249,6 +257,9 @@ window.zendit.receive('settings-got', (data) => {
             newRepoOption.value = data.repo
             newRepoOption.innerText = data.config.alias
             selectRepository.appendChild(newRepoOption)
+            if (loadedConfigs['globals'].lastRepo == data.repo) {
+                newRepoOption.selected = true;
+            }
         }
         loadedConfigs[data.repo] = data.config;
     }
