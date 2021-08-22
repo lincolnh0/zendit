@@ -41,8 +41,7 @@ html(lang='en')
                             .col.mb-3
                                 label.form-label(for="jira-domain") Jira domain
                                 .input-group    
-                                    .input-group-prepend
-                                        span.input-group-text https://
+                                    span.input-group-text https://
                                     input#jira-domain.form-control(type="text", name="jira-domain", placeholder="Jira domain" required)
                             .col.mb-3
                                 label.form-label(for="jira-email") Jira email
@@ -76,7 +75,10 @@ html(lang='en')
                         .row
                             .col-6.mb-3
                                 label.form-label(for="tbxEditRepoURL") URL
-                                input#tbxEditRepoURL.form-control(type="text", name="tbxEditRepoURL")
+                                .input-group
+                                    span.input-group-text https://github.com/
+                                    input#tbxEditRepoURL.form-control(type="text", name="tbxEditRepoURL")
+
                             .col-6.mb-3
                                 label.form-label(for="tbxEditDirectory") Directory
                                 input#tbxEditDirectory.form-control(type="text", name="tbxEditDirectory")

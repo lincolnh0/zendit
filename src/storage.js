@@ -132,7 +132,7 @@ ipcMain.on('save-settings', async (event, arg) => {
             configFile += '/repos/' + arg.repo + '.yml'
             break;
     }
-    
+
     let combinedConfig = arg.config;
     // Merge new settings to unchanged previous settings.
     if (fs.existsSync(configFile) && arg.force_overwrite == false) {
@@ -145,4 +145,10 @@ ipcMain.on('save-settings', async (event, arg) => {
         }
     })
     event.sender.send('settings-saved', { repo: arg.repo, trigger: arg.trigger });
+})
+
+ipcMain.on('remove-repository', async (event, arg) => {
+
+    fs.unlinkSync(app.getPath('userData') + '/repos/' + arg + '.yml');
+    event.sender.send('repository-removed');
 })

@@ -14,5 +14,9 @@ body {
 }
 
 .input-group .btn-outline-secondary {
+    color: $layered;
+}
+
+.input-group .btn-outline-secondary.btn-danger {
     color: $light_primary;
 }

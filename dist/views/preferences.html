@@ -27,8 +27,7 @@
             <div class="row">
               <div class="col mb-3">
                 <label class="form-label" for="jira-domain">Jira domain</label>
-                <div class="input-group">   
-                  <div class="input-group-prepend"><span class="input-group-text">https://</span></div>
+                <div class="input-group">   <span class="input-group-text">https://</span>
                   <input class="form-control" id="jira-domain" type="text" name="jira-domain" placeholder="Jira domain" required>
                 </div>
               </div>
@@ -67,7 +66,9 @@
             <div class="row">
               <div class="col-6 mb-3">
                 <label class="form-label" for="tbxEditRepoURL">URL</label>
-                <input class="form-control" id="tbxEditRepoURL" type="text" name="tbxEditRepoURL">
+                <div class="input-group"><span class="input-group-text">https://github.com/</span>
+                  <input class="form-control" id="tbxEditRepoURL" type="text" name="tbxEditRepoURL">
+                </div>
               </div>
               <div class="col-6 mb-3">
                 <label class="form-label" for="tbxEditDirectory">Directory</label>

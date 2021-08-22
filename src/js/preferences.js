@@ -22,6 +22,7 @@ function add_event_listeners_to_form() {
 
 
     selectRepository.addEventListener('change', (e) => update_repo_information())
+    btnRemoveRepository.addEventListener('click', (e) => remove_repository())
 
     window.zendit.send('get-settings', { repo: 'globals', init: true });
 }
@@ -160,6 +161,11 @@ function toggle_token_fields(e, id) {
 
 // Show selected repo's template
 function update_repo_information() {
+
+    // Disables delete button is global is selected.
+    btnRemoveRepository.disabled = selectRepository.value === 'globals';
+    
+
     if ('branchRegex' in loadedConfigs[selectRepository.value]) {
         // tbxBranchRegex.value = loadedConfigs[selectRepository.value].branchRegex;
     }
@@ -196,8 +202,12 @@ function update_repo_information() {
     }
     else {
         CKEDITOR.instances['jira-comment-template'].setData(loadedConfigs.globals.commentTemplate);
-
     }  
+}
+
+// Allows user to remove existing repository.
+function remove_repository() {
+    window.zendit.send('remove-repository', selectRepository.value);
 }
 
 // Populate fields with retrieved settings
@@ -258,4 +268,9 @@ window.zendit.receive('directory-selected', (data) => {
     }
     btnAddRepo.disabled = !data.eligible;
     
+})
+
+window.zendit.receive('repository-removed', () => {
+    delete loadedConfigs[selectRepository.value];
+    location.reload();
 })
