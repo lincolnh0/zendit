@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
-const { exec } = require('child_process')
+const { exec, execSync } = require('child_process')
 
 const { Octokit } = require("@octokit/core");
 
@@ -21,7 +21,7 @@ ipcMain.on('create-pr', async (event, arg) => {
     }
 
     // Force an upstream push in case there isn't a remote branch.
-    exec ('cd ' + arg.directory + ' && git push --set-upstream origin ' + arg.head, (err, stdout, stderr) => {
+    execSync ('cd ' + arg.directory + ' && git push --set-upstream origin ' + arg.head, (err, stdout, stderr) => {
         if (err) {
             console.log(err)
             throw err;
