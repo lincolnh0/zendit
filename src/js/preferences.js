@@ -24,6 +24,11 @@ function add_event_listeners_to_form() {
     selectRepository.addEventListener('change', (e) => update_repo_information())
     btnRemoveRepository.addEventListener('click', (e) => remove_repository())
 
+    btnAddCustomField.addEventListener('click', (e) => add_custom_field())
+    btnRemoveCustomField.addEventListener('click', (e) => remove_custom_field())
+    selectCustomField.addEventListener('change', (e) => update_custom_field())
+    btnSaveCustomFields.addEventListener('click', (e) => save_custom_field())
+
     window.zendit.send('get-settings', { repo: 'globals', init: true });
 }
 
@@ -60,8 +65,6 @@ function save_templates(e) {
     }
     buttonNode.disabled = true;
 
-    const repoAlias = document.getElementById('tbxEditRepoAlias').value;
-
     const configObject = {
         repo: selectRepository.value,
         config: {
@@ -73,7 +76,6 @@ function save_templates(e) {
         trigger: buttonNode.id,
         force_overwrite: false,
     }
-
 
     if (loadedConfigs[selectRepository.value].alias !== tbxEditRepoAlias.value) {        
         configObject.config.alias = tbxEditRepoAlias.value;
@@ -211,14 +213,35 @@ function remove_repository() {
     window.zendit.send('remove-repository', selectRepository.value);
 }
 
-function rename_repository() {
-    window.zendit.send('prompt', {
-        title: 'Rename ' + loadedConfigs[selectRepository.value].alias,
-        content: 'Please enter the new alias for this repository',
-        value: loadedConfigs[selectRepository.value].alias,
-        config: loadedConfigs[selectRepository.value],
-        type: 'rename',
-    });
+function add_custom_field(e) {
+    const fieldLabel = tbxCustomField.value;
+    const customField = document.querySelector('option[value="' + fieldLabel + '"]');
+    customField.parentNode.removeChild(customField);
+    selectCustomField.appendChild(customField);
+    tbxCustomField.value = '';
+    if (selectCustomField.childNodes.length == 1) {
+        update_custom_field();
+    }
+}
+
+function remove_custom_field(e) {
+    const selectedCustomField = selectCustomField.options[selectCustomField.selectedIndex];
+    selectedCustomField.parentNode.removeChild(selectedCustomField);
+    fieldList.appendChild(selectedCustomField);
+
+}
+
+function load_custom_field(e) {
+
+}
+
+function save_custom_field(e) {
+    const selectedCustomField = selectCustomField.options[selectCustomField.selectedIndex];
+
+}
+
+function update_custom_field(e) {
+    console.log(selectCustomField.value)
 }
 
 // Populate fields with retrieved settings
@@ -229,6 +252,13 @@ window.zendit.receive('settings-got', (data) => {
         document.getElementById('jira-api-token').value = data.config.jiraToken;
         document.getElementById('jira-email').value = data.config.jiraEmail;
         data.config.alias = 'Global'
+
+        // Get custom fields from Jira org using retrieved credntials.
+        window.zendit.send('get-fields', {
+            jiraDomain: data.config.jiraDomain,
+            jiraToken: data.config.jiraToken,
+            jiraEmail: data.config.jiraEmail,
+        });
     }
 
     if (data.repo in loadedConfigs == false) {
@@ -284,4 +314,16 @@ window.zendit.receive('directory-selected', (data) => {
 window.zendit.receive('reload', () => {
     delete loadedConfigs[selectRepository.value];
     location.reload();
+})
+
+window.zendit.receive('fields-got', (fields) => {
+    fields.forEach(field => {
+        if (field.custom === true) {
+            const newFieldOption = document.createElement('option');
+            newFieldOption.value = field.name;
+            newFieldOption.innerHTML = field.name
+            newFieldOption.dataset.id = field.id;
+            fieldList.appendChild(newFieldOption);
+        }
+    })
 })

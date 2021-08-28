@@ -312,3 +312,20 @@ ipcMain.on('get-jira-groups', async (event, arg) => {
 
   }
 })
+
+// Get Jira custom fields.
+ipcMain.on('get-fields', async(event, arg) => {
+  const fieldRequestObject = {
+    requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/field',
+    requestMethod: 'GET',
+    jiraEmail: arg.jiraEmail,
+    jiraToken: arg.jiraToken,
+  }
+
+  const fieldApiResonse  =  await call_jira_api(fieldRequestObject)
+  const fieldRespoonseBody = await fieldApiResonse.text()
+  if (fieldApiResonse.status == 200) {
+    event.sender.send('fields-got', JSON.parse(fieldRespoonseBody))
+  }
+
+})
