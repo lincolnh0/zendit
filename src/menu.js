@@ -12,7 +12,6 @@ const template = [
                 const settingsWindow = new BrowserWindow({
                     width: 1000, 
                     height: 750,
-                    alwaysOnTop: true,
                     autoHideMenuBar: true,
                     skipTaskbar: true,
                     parent: focusedWindow,
