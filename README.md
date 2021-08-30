@@ -50,13 +50,12 @@ Takes around 1.5 minute by a very prepared user (me)
 
 #### New workflow
 
-1. push local change on terminal
-2. choose head branch from ui
-3. edit own PR template
-4. assign reviewer
-5. edit own comment template (Or not with use of tokens)
-6. assign issue to reviewer
-7. publish
+1. choose head branch from ui (optional)
+2. edit own PR template
+3. assign reviewer (optional)
+4. edit own comment template (Or not with use of tokens)
+5. assign issue to reviewer
+6. publish
 
 Takes around 20 seconds, minus the slowing down from loading both websites.
 
