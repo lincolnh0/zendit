@@ -284,6 +284,9 @@ window.zendit.receive('settings-got', (data) => {
             if (loadedConfigs['globals'].lastRepo == data.repo) {
                 newRepoOption.selected = true;
             }
+            if (data.default == true) {
+                newRepoOption.selected = true;
+            }
         }
         loadedConfigs[data.repo] = data.config;
     }

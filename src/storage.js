@@ -99,10 +99,14 @@ ipcMain.on('get-settings', async (event, arg) => {
     else {
         try {
             const doc = yaml.load(fs.readFileSync(configFile, 'utf8'));
-            event.sender.send('settings-got', {
+            const returnData = {
                 repo: arg.repo,
                 config: doc,
-            });
+            };
+            if (arg.repo == 'globals' && process.argv.length > 1 && process.argv[1] != '.') {
+                delete returnData.config.lastRepo;
+            }
+            event.sender.send('settings-got', returnData);
         } 
         catch (err) {
             throw err
@@ -117,10 +121,16 @@ ipcMain.on('get-settings', async (event, arg) => {
             files.forEach(file => {
                 fs.readFile(repoFolder + file, 'utf8', (err, data) => {
                     const doc = yaml.load(data);
-                    event.sender.send('settings-got', {
+                    const returnData = {
                         repo: file.split('.')[0],
                         config: doc,
-                    });
+                    };
+
+                    if (process.argv[1] == doc.directory) {
+                        returnData.default = true;
+                    }
+
+                    event.sender.send('settings-got', returnData);
                 });
             })
             
