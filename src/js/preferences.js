@@ -69,9 +69,9 @@ function save_templates(e) {
         repo: selectRepository.value,
         config: {
             directory: document.getElementById('tbxEditDirectory').value,
+            reviewer: document.getElementById('tbxRepoReviewer').value,
             prTemplate: document.getElementById('pr-template').value,
             commentTemplate: CKEDITOR.instances['jira-comment-template'].getData(),
-            branchRegex: tbxBranchRegex.value
         },
         trigger: buttonNode.id,
         force_overwrite: false,
@@ -96,7 +96,7 @@ function reset_templates(e) {
     }
     delete loadedConfigs[selectRepository.value].prTemplate
     delete loadedConfigs[selectRepository.value].commentTemplate
-    delete loadedConfigs[selectRepository.value].tbxBranchRegex
+    delete loadedConfigs[selectRepository.value].reviewer
     buttonNode.disabled = true;
     const configObject = {
         repo: selectRepository.value,
@@ -166,14 +166,7 @@ function update_repo_information() {
 
     // Disables delete button is global is selected.
     btnRemoveRepository.disabled = selectRepository.value === 'globals';
-    
 
-    if ('branchRegex' in loadedConfigs[selectRepository.value]) {
-        // tbxBranchRegex.value = loadedConfigs[selectRepository.value].branchRegex;
-    }
-    else {
-        // tbxBranchRegex.value = loadedConfigs.globals.branchRegex;
-    }
     if (selectRepository.value !== 'globals') {
         if ('alias' in loadedConfigs[selectRepository.value]) {
             document.getElementById('tbxEditRepoAlias').value = loadedConfigs[selectRepository.value].alias;
@@ -182,14 +175,29 @@ function update_repo_information() {
         if ('directory' in loadedConfigs[selectRepository.value]) {
             document.getElementById('tbxEditDirectory').value = loadedConfigs[selectRepository.value].directory;
         }
+
+        while (githubUsers.firstChild) {
+            githubUsers.removeChild(githubUsers.lastChild)
+            tbxRepoReviewer.value = ''
+        }
+    
+        window.zendit.send("get-github-users", {
+            githubToken: loadedConfigs.globals.githubToken,
+            owner: loadedConfigs[selectRepository.value].owner,
+        })
     }
     else {
         tbxEditDirectory.value = '';
+        
     }
 
+    tbxRepoReviewer.disabled = selectRepository.value === 'globals';
     tbxEditRepoAlias.disabled = selectRepository.value === 'globals';
     tbxEditDirectory.disabled = selectRepository.value === 'globals';
 
+    if ('reviewer' in loadedConfigs[selectRepository.value]) {
+        document.getElementById('tbxRepoReviewer').value = loadedConfigs[selectRepository.value].reviewer;
+    }
 
     if ('prTemplate' in loadedConfigs[selectRepository.value]) {
         document.getElementById('pr-template').value = loadedConfigs[selectRepository.value].prTemplate;
@@ -203,7 +211,9 @@ function update_repo_information() {
     }
     else {
         CKEDITOR.instances['jira-comment-template'].setData(loadedConfigs.globals.commentTemplate);
-    }  
+    }
+
+
 }
 
 // Allows user to remove existing repository.
@@ -362,4 +372,15 @@ window.zendit.receive('fields-got', (fields) => {
             }
         })
     }
+})
+
+window.zendit.receive('github-users-got', (data) => {
+    while (githubUsers.firstChild) {
+        githubUsers.removeChild(githubUsers.lastChild)
+    }
+    data.data.forEach((user) => {
+        githubUserOption = document.createElement('option');
+        githubUserOption.value = user.login;
+        githubUsers.appendChild(githubUserOption)
+    })
 })

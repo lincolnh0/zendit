@@ -62,6 +62,7 @@ html(lang='en')
                             span Save
                     
                     #templates-tab.tab-pane
+                        datalist#githubUsers
                         .row
                             .col-6.mb-3
                                 label.form-label(for="selectRepository") Repository
@@ -70,8 +71,8 @@ html(lang='en')
                                     button#btnRemoveRepository.btn.btn-outline-secondary.btn-danger
                                         i.fas.fa-trash-alt                                         
                             .col-6.mb-3
-                                label.form-label(for="tbxBranchRegex") Branch-ticket regex
-                                input#tbxBranchRegex.form-control(type="text", name="tbxBranchRegex" disabled placeholder="Coming soon")
+                                label.form-label(for="tbxRepoReviewer") Reviewer
+                                input#tbxRepoReviewer.form-select(type="text", name="tbxRepoReviewer" list="githubUsers")
                         
                         .row
                             .col-6.mb-3

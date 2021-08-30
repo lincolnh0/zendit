@@ -35,7 +35,12 @@ function populate_branches() {
     
     tbxSourceBranch.value = '';
     tbxHeadBranch.value = '';
+    tbxReviewer.value = '';
     btnSubmit.disabled = selectRepository.value == 0;
+
+    if ('reviewer' in loadedConfigs[selectRepository.value]) {
+        tbxReviewer.value = loadedConfigs[selectRepository.value].reviewer;
+    }
 
     if ('prTemplate' in loadedConfigs[selectRepository.value]) {
         tbxPR.value = loadedConfigs[selectRepository.value].prTemplate;

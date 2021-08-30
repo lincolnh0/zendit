@@ -46,6 +46,7 @@
             <button class="btn btn-success col-2" id="btnSaveAccount" type="button"><i class="fas fa-save"> </i><span>Save</span></button>
           </div>
           <div class="tab-pane" id="templates-tab">
+            <datalist id="githubUsers"></datalist>
             <div class="row">
               <div class="col-6 mb-3">
                 <label class="form-label" for="selectRepository">Repository</label>
@@ -55,8 +56,8 @@
                 </div>
               </div>
               <div class="col-6 mb-3">
-                <label class="form-label" for="tbxBranchRegex">Branch-ticket regex</label>
-                <input class="form-control" id="tbxBranchRegex" type="text" name="tbxBranchRegex" disabled placeholder="Coming soon">
+                <label class="form-label" for="tbxRepoReviewer">Reviewer</label>
+                <input class="form-select" id="tbxRepoReviewer" type="text" name="tbxRepoReviewer" list="githubUsers">
               </div>
             </div>
             <div class="row">
