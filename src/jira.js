@@ -96,43 +96,110 @@ ipcMain.on('create-jira-comment', async (event, arg) => {
     }, 500);
     return;
   }
-
+  
   // Build adf format comments from html markup.
   const comment = recursive_build_document(arg.body, arg.tokens);
+  if (arg.type == 'comment') {
 
-  let visibilityString = ''
-  
-  if (arg.visibility == 'support') {
-    visibilityString = `
-    "properties": [
-      {
-        "key": "sd.public.comment",
-        "value": {
-          "internal": true
+    // Determine comment visibility.
+    let visibilityString = ''
+    
+    if (arg.visibility == 'support') {
+      visibilityString = `
+      "properties": [
+        {
+          "key": "sd.public.comment",
+          "value": {
+            "internal": true
+          }
         }
+      ],`
+    }
+    else if (arg.visibility != '_none') {
+      visibilityString = `"visibility": {"type": "group", "value": "${ arg.visibility }" },`
+    }
+
+    // Construct request object.
+    const requestObject = {
+      requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/comment',
+      jiraEmail: arg.jiraEmail,
+      jiraToken: arg.jiraToken,
+      requestMethod: 'POST',
+      // jsdPublic is the boolean for support desk tickets.
+      requestBody: `{ ${visibilityString} "body": ${ comment }}`,
+    }
+  
+    call_jira_api(requestObject)
+    .then((response) => {
+  
+      if (response.status == 201) {
+        const responseObject = {
+          text: response.statusText,
+          status: response.status,
+          ticketNo: arg.ticketNo,
+        }
+    
+        if ('assignee' in arg.tokens) {
+          responseObject.assignee = arg.tokens.assignee;
+        }
+  
+        if ('transition' in arg) {
+          responseObject.transition = arg.transition;
+        }
+  
+        if ('timeSpent' in arg) {
+          responseObject.timeSpent = arg.timeSpent;
+        }
+    
+        win.webContents.send('jira-comment-created', responseObject);
       }
-    ],`
-  }
-  else if (arg.visibility != '_none') {
-    visibilityString = `"visibility": {"type": "group", "value": "${ arg.visibility }" },`
-  } 
+    })
+    
+  } else if (arg.type == 'field') {
+    // Retrieve current issue's field.
+    const requestObject = {
+      requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '?fields=' + arg.visibility,
+      jiraEmail: arg.jiraEmail,
+      jiraToken: arg.jiraToken,
+      requestMethod: 'GET',
+    }
 
-  const requestObject = {
-    requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo + '/comment',
-    jiraEmail: arg.jiraEmail,
-    jiraToken: arg.jiraToken,
-    requestMethod: 'POST',
-    // jsdPublic is the boolean for support desk tickets.
-    requestBody: `{ ${visibilityString} "body": ${ comment }}`,
-  }
+    const requestResponse = await call_jira_api(requestObject);
+    const requestBody = await requestResponse.text();
+    const issueField = JSON.parse(requestBody).fields[arg.visibility]
+    const originalFieldContent = issueField.content
 
-  call_jira_api(requestObject)
-  .then((response) => {
+    const commentJSON = JSON.parse(comment)
 
-    if (response.status == 201) {
+    switch (arg.option) {
+      case 'prepend':
+        commentJSON.content.push(...originalFieldContent)
+        break;
+      case 'append':
+        commentJSON.content.unshift(...originalFieldContent)
+        break;
+    }
+
+
+    // Send update request.
+    const updateRequestObject = {
+      requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/issue/' + arg.ticketNo,
+      jiraEmail: arg.jiraEmail,
+      jiraToken: arg.jiraToken,
+      requestMethod: 'PUT',
+      requestBody: JSON.stringify({
+        fields: {
+          [arg.visibility]: commentJSON,
+        }
+      })
+    }
+
+    const updateRequestResponse = await call_jira_api(updateRequestObject);
+    
+    if (updateRequestResponse.status == 204) {
       const responseObject = {
-        text: response.statusText,
-        status: response.status,
+        text: updateRequestResponse.statusText,
+        status: updateRequestResponse.status,
         ticketNo: arg.ticketNo,
       }
   
@@ -150,8 +217,9 @@ ipcMain.on('create-jira-comment', async (event, arg) => {
   
       win.webContents.send('jira-comment-created', responseObject);
     }
-  })
-  
+    
+
+  }
 
 })
 
