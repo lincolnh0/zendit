@@ -22,6 +22,9 @@ html(lang='en')
                     a.nav-link(data-bs-target="#templates-tab", data-bs-toggle="pill") 
                         i.fas.fa-paste
                         span Repositories
+                    a.nav-link(data-bs-target="#custom-fields-tab", data-bs-toggle="pill")
+                        i.fas.fa-pen
+                        span Custom fields
                     a.nav-link(data-bs-target="#add-new-repo-tab", data-bs-toggle="pill") 
                         i.fas.fa-plus-circle
                         span New repo
@@ -90,7 +93,7 @@ html(lang='en')
                         
                             .col.mb-3
                                 label(for="jira-comment-template") Jira comment template
-                                textarea#jira-comment-template.form-control(name="pr=template", rows="30")
+                                textarea#jira-comment-template.form-control(name="jira-template", rows="30")
                                 .form-text
                                     p Available tokens: <code>[assignee]</code>, <code>[prLink]</code>
                         .input-group-btn
@@ -100,6 +103,47 @@ html(lang='en')
                             button#btnResetTemplate.btn.btn-light.col-2(type="button")
                                 i.fas.fa-sync-alt
                                 span Reset                    
+                    
+                    #custom-fields-tab.tab-pane
+                        datalist#fieldList l
+                        .mb-3
+                            p 
+                            | Custom fields are fields created by your organisation. 
+                            br
+                            | Currently only displaying fields that allow free text entry.
+                        .row
+                            .col-5
+                                label(for="tbxCustomField") All available fields
+                            .col-3
+                                label(for="selectCustomField") Customised fields
+                            .col-3
+                                label(for="selectCustomFieldOptions") Options
+                        .row
+                            .col-3.mb-3
+                                input#tbxCustomField.form-select(type="text" list="fieldList")
+
+                            .col-2.mb-3
+                                button#btnRemoveCustomField.btn.btn-light <
+                                button#btnAddCustomField.btn.btn-light >
+
+                            .col-3.mb-3 
+                                select#selectCustomField.form-select
+                            .col-3.mb-3 
+                                select#selectCustomFieldOptions.form-select
+                                    option(value="prepend") Prepend
+                                    option(value="replace") Replace
+                                    option(value="append") Append
+                        .row
+                            .col-11
+                                textarea#custom-field-template.form-control(name="custom-fieldtemplate", rows="30")
+                                .form-text
+                                    p Available tokens: <code>[assignee]</code>, <code>[prLink]</code>
+                        .input-group-btn
+                            button#btnSaveCustomFields.btn.btn-success.col-2(type="button")
+                                i.fas.fa-save 
+                                span Save
+                                
+                    
                     #add-new-repo-tab.tab-pane
                         .mb-3
                             label.form-label(for="tbxDirectory") Directory
@@ -128,6 +172,7 @@ html(lang='en')
                 
         script
             | CKEDITOR.replace('jira-comment-template');
+            | CKEDITOR.replace('custom-field-template');
             | CKEDITOR.config.height = 280;
         script(src="../js/bootstrap.bundle.min.js")
         script(src="../js/preferences.js")

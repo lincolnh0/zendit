@@ -12,6 +12,7 @@ function add_event_listeners_to_form() {
     btnRefreshRepos.addEventListener('click', () => populate_repositories())
 
     selectRepository.addEventListener('change', (e) => populate_branches())
+    selectJiraGroup.addEventListener('change', (e) => change_comment_template())
 
     tbxHeadBranch.addEventListener('input', () => autofill_title())
 
@@ -53,6 +54,24 @@ function populate_branches() {
 
     populate_github_users()
     window.zendit.send('get-branches', loadedConfigs[selectRepository.value].directory)
+}
+
+function change_comment_template() {
+
+    // Switch to custom field template if exists, otherwise use repo template/
+    if (selectJiraGroup.value in loadedConfigs.globals.fields) {
+        CKEDITOR.instances['tbxJiraComment'].setData(loadedConfigs.globals.fields[selectJiraGroup.value].content);
+    }
+    else {
+
+        if ('commentTemplate' in loadedConfigs[selectRepository.value]) {
+            CKEDITOR.instances['tbxJiraComment'].setData(loadedConfigs[selectRepository.value].commentTemplate);
+        }
+        else {
+            CKEDITOR.instances['tbxJiraComment'].setData(loadedConfigs['globals'].commentTemplate);
+        }
+    }
+
 }
 
 // Requests jira users.
@@ -181,6 +200,8 @@ function submit_jira_comment(data) {
         jiraToken: loadedConfigs['globals'].jiraToken,
         jiraEmail: loadedConfigs['globals'].jiraEmail,
         visibility: selectJiraGroup.value,
+        type: selectJiraGroup.options[selectJiraGroup.selectedIndex].dataset.type,
+        option: selectJiraGroup.options[selectJiraGroup.selectedIndex].dataset.option,
         transition: selectTransition.value,
         timeSpent: tbxTimelog.value,
         body: bodyObject,
@@ -305,7 +326,7 @@ window.zendit.receive('pr-created', (data) => {
 // On comment creation
 window.zendit.receive('jira-comment-created', (data) => {
     // UI feedback.
-    if (data.status == 201) {
+    if (data.status == 201 || data.status == 204) {
 
         cbxCommentCreated.checked = true;
         free_submit_buttons();
@@ -386,7 +407,7 @@ window.zendit.receive('jira-groups-got', (data) => {
     }
 
     groupOption = document.createElement('option')
-    groupOption.innerText = "None"
+    groupOption.innerText = "Public"
     groupOption.value = "_none"
     selectJiraGroup.appendChild(groupOption)
 
@@ -394,13 +415,24 @@ window.zendit.receive('jira-groups-got', (data) => {
     groupOption = document.createElement('option')
     groupOption.value = 'support'
     groupOption.innerText = 'Internal note'
+    groupOption.dataset.type = 'comment'
     selectJiraGroup.appendChild(groupOption)
     
     data.groups.forEach(group => {
         groupOption = document.createElement('option')
         groupOption.innerText = group.name
         groupOption.value = group.name
+        groupOption.dataset.type = 'comment'
         selectJiraGroup.appendChild(groupOption)
+    })
+
+    Object.keys(loadedConfigs.globals.fields).forEach((field_key) => {
+        customField = document.createElement('option')
+        customField.innerText = loadedConfigs.globals.fields[field_key].name + ` (${loadedConfigs.globals.fields[field_key].option})`
+        customField.value = field_key
+        customField.dataset.type = 'field'
+        customField.dataset.option = loadedConfigs.globals.fields[field_key].option
+        selectJiraGroup.appendChild(customField)
     })
 })
 
