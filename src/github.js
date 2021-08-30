@@ -21,7 +21,7 @@ ipcMain.on('create-pr', async (event, arg) => {
     }
 
     // Force an upstream push in case there isn't a remote branch.
-    execSync ('cd ' + arg.directory + ' && git push --set-upstream origin ' + arg.head, (err, stdout, stderr) => {
+    execSync ('cd ' + arg.directory + ' && git push --set-upstream origin ' + arg.head + ' 2> /dev/null', (err, stdout, stderr) => {
         if (err) {
             console.log(err)
             throw err;
