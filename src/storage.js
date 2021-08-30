@@ -22,15 +22,24 @@ ipcMain.on('select-directory', async (event, arg) => {
 
 ipcMain.on('get-branches', async (event, path) => {
 
-    exec ('cd ' + path + ' && git branch', (err, stdout, stderr) => {
-        if (err) {
-            throw err;
+    exec ('cd ' + path + ' && git branch', (errAll, stdoutAll, stderrAll) => {
+        if (errAll) {
+            throw errAll;
         }
         else {
-            const responseObj = {
-                branches: stdout.split('\n'),
-            }
-            event.sender.send('branches-got', responseObj)
+            exec('cd ' + path + ' && git rev-parse --abbrev-ref HEAD', (err, stdout, stderr) => {
+                if (err) {
+                    throw err;
+                }
+                else {
+
+                    const responseObj = {
+                        branches: stdoutAll.split('\n'),
+                        currentBranch: stdout,
+                    }
+                    event.sender.send('branches-got', responseObj)
+                }
+            });
         }
         
     });
