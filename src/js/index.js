@@ -259,6 +259,9 @@ window.zendit.receive('branches-got', (data) => {
             tbxSourceBranch.value = branchName;
         }
     });
+
+    tbxHeadBranch.value = data.currentBranch;
+    autofill_title();
 })
 
 // Populate fields with retrieved settings
