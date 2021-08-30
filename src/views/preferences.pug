@@ -106,28 +106,35 @@ html(lang='en')
                     
                     #custom-fields-tab.tab-pane
                         datalist#fieldList l
-                        .mb-5
+                        .mb-3
                             p 
                             | Custom fields are fields created by your organisation. 
                             br
-                            | Tokens are only supported on the paragraph field types.
+                            | Currently only displaying fields that allow free text entry.
                         .row
-                            .col-6
-                                p All available fields
-                            .col-6
-                                p Customised fields
+                            .col-5
+                                label(for="tbxCustomField") All available fields
+                            .col-3
+                                label(for="selectCustomField") Customised fields
+                            .col-3
+                                label(for="selectCustomFieldOptions") Options
                         .row
-                            .col-4.mb-3
+                            .col-3.mb-3
                                 input#tbxCustomField.form-select(type="text" list="fieldList")
 
                             .col-2.mb-3
                                 button#btnRemoveCustomField.btn.btn-light <
                                 button#btnAddCustomField.btn.btn-light >
 
-                            .col-4.mb-3 
+                            .col-3.mb-3 
                                 select#selectCustomField.form-select
+                            .col-3.mb-3 
+                                select#selectCustomFieldOptions.form-select
+                                    option(value="prepend") Prepend
+                                    option(value="replace") Replace
+                                    option(value="append") Append
                         .row
-                            .col-10
+                            .col-11
                                 textarea#custom-field-template.form-control(name="custom-fieldtemplate", rows="30")
                                 .form-text
                                     p Available tokens: <code>[assignee]</code>, <code>[prLink]</code>
@@ -165,7 +172,6 @@ html(lang='en')
                 
         script
             | CKEDITOR.replace('jira-comment-template');
-            | CKEDITOR.config.height = 280;
             | CKEDITOR.replace('custom-field-template');
             | CKEDITOR.config.height = 280;
         script(src="../js/bootstrap.bundle.min.js")
