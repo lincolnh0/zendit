@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { exec, execSync } = require('child_process')
 
 const { Octokit } = require("@octokit/core");
 
@@ -8,7 +9,7 @@ ipcMain.on('create-pr', async (event, arg) => {
 
     if (debug) {
         setTimeout(() => {
-            win.webContents.send('pr-created', {
+            event.sender.send('pr-created', {
                 status:201,
                 prLink: "https://google.com",
                 prNumer: 1,
@@ -19,6 +20,14 @@ ipcMain.on('create-pr', async (event, arg) => {
         return;
     }
 
+    // Force an upstream push in case there isn't a remote branch.
+    execSync ('cd ' + arg.directory + ' && git push --set-upstream origin ' + arg.head + ' 2> /dev/null', (err, stdout, stderr) => {
+        if (err) {
+            console.log(err)
+            throw err;
+        }
+        
+    });
 
     const octokit = new Octokit({ auth: arg.githubToken });
     const githubResponse = await octokit.request('POST /repos/{owner}/{repo}/pulls', {
@@ -28,6 +37,7 @@ ipcMain.on('create-pr', async (event, arg) => {
         base: arg.source,
         title: arg.title,
         body: arg.body,
+        
     })
 
     if (githubResponse.status == 201) {
@@ -38,14 +48,14 @@ ipcMain.on('create-pr', async (event, arg) => {
             owner: arg.owner,
             repo: arg.repo,
         }
-        win.webContents.send('pr-created', response);
+        event.sender.send('pr-created', response);
     }
 })
 
 ipcMain.on('get-github-users', async (event, arg) => {
 
     if (debug) {
-        win.webContents.send('github-users-got', {
+        event.sender.send('github-users-got', {
             data: [{ login: 'linconh0' }]
         });
         return;
@@ -58,7 +68,7 @@ ipcMain.on('get-github-users', async (event, arg) => {
         })
 
         if (githubResponse.status == 200) {
-            win.webContents.send('github-users-got', githubResponse);
+            event.sender.send('github-users-got', githubResponse);
         }
     }
     catch (err) {
@@ -74,7 +84,7 @@ ipcMain.on('request-review', async (event, arg) => {
 
     if (debug) {
         setTimeout(() => {
-            win.webContents.send('review-requested', {
+            event.sender.send('review-requested', {
                 status:201,
                 prLink: "https://google.com",
                 prNumer: 1,
@@ -99,7 +109,7 @@ ipcMain.on('request-review', async (event, arg) => {
             prLink: githubResponse.data.html_url,
             prNumber: githubResponse.data.number,
         }
-        win.webContents.send('review-requested', response);
+        event.sender.send('review-requested', response);
     }
 
 })

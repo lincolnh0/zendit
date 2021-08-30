@@ -20,8 +20,11 @@ html(lang='en')
                         i.fas.fa-users
                         span Accounts
                     a.nav-link(data-bs-target="#templates-tab", data-bs-toggle="pill") 
-                        i.fas.fa-code
-                        span Templates
+                        i.fas.fa-paste
+                        span Repositories
+                    a.nav-link(data-bs-target="#custom-fields-tab", data-bs-toggle="pill")
+                        i.fas.fa-pen
+                        span Custom fields
                     a.nav-link(data-bs-target="#add-new-repo-tab", data-bs-toggle="pill") 
                         i.fas.fa-plus-circle
                         span New repo
@@ -33,55 +36,65 @@ html(lang='en')
                             label.form-label(for="github-api-token") Github API token
                             .input-group
                                 input#github-api-token.form-control(type="password", name="github-api-token", placeholder="Github API token")
-                                .input-group-append
-                                    button#btnShowGithub.btn.btn-outline-secondary.btn-light(data-target="github-api-token")
-                                        i.fas.fa-eye
+                                button#btnShowGithub.btn.btn-outline-secondary.btn-light(data-target="github-api-token")
+                                    i.fas.fa-eye
 
                         .row
                             .col.mb-3
                                 label.form-label(for="jira-domain") Jira domain
                                 .input-group    
-                                    .input-group-prepend
-                                        span.input-group-text https://
+                                    span.input-group-text https://
                                     input#jira-domain.form-control(type="text", name="jira-domain", placeholder="Jira domain" required)
                             .col.mb-3
                                 label.form-label(for="jira-email") Jira email
                                 .input-group
                                     input#jira-email.form-control(type="email", name="jira-email" required)
                                 
-                        .mb-5
+                        .mb-3
                             label.form-label(for="jira-api-token") Jira API token
                             .input-group
                                 input#jira-api-token.form-control(type="password", name="jira-api-token", placeholder="Jira API token")
-                                .input-group-append
-                                    button#btnShowJira.btn.btn-outline-secondary.btn-light(data-target="jira-api-token") 
-                                        i.fas.fa-eye
+                                button#btnShowJira.btn.btn-outline-secondary.btn-light(data-target="jira-api-token") 
+                                    i.fas.fa-eye
                         
                         button#btnSaveAccount.btn.btn-success.col-2(type="button")
                             i.fas.fa-save 
                             span Save
                     
                     #templates-tab.tab-pane
+                        datalist#githubUsers
                         .row
                             .col-6.mb-3
                                 label.form-label(for="selectRepository") Repository
                                 .input-group
                                     select#selectRepository.form-select
                                     button#btnRemoveRepository.btn.btn-outline-secondary.btn-danger
-                                        i.fas.fa-trash-alt
+                                        i.fas.fa-trash-alt                                         
                             .col-6.mb-3
-                                label.form-label(for="tbxBranchRegex") Branch-ticket regex
-                                input#tbxBranchRegex.form-control(type="text", name="tbxBranchRegex" disabled placeholder="Coming soon")
+                                label.form-label(for="tbxRepoReviewer") Reviewer
+                                input#tbxRepoReviewer.form-select(type="text", name="tbxRepoReviewer" list="githubUsers")
+                        
+                        .row
+                            .col-6.mb-3
+                                label.form-label(for="tbxEditRepoAlias") Alias
+                                .input-group
+                                    input#tbxEditRepoAlias.form-control(type="text", name="tbxEditRepoAlias")
+
+                            .col-6.mb-3
+                                label.form-label(for="tbxEditDirectory") Directory
+                                input#tbxEditDirectory.form-control(type="text", name="tbxEditDirectory")
+                                
+
                         .row
                             .col.mb-3
                                 label(for="pr-template") Pull request template
                                 textarea#pr-template.form-control(name="pr-template", rows="13")
                                 .form-text
-                                    p Available tokens: <code>[ticketNo]</code>
+                                    p Available tokens: <code>[ticketNo]</code>, <code>[jiraDomain]</code>
                         
                             .col.mb-3
                                 label(for="jira-comment-template") Jira comment template
-                                textarea#jira-comment-template.form-control(name="pr=template", rows="30")
+                                textarea#jira-comment-template.form-control(name="jira-template", rows="30")
                                 .form-text
                                     p Available tokens: <code>[assignee]</code>, <code>[prLink]</code>
                         .input-group-btn
@@ -90,9 +103,47 @@ html(lang='en')
                                 span Save
                             button#btnResetTemplate.btn.btn-light.col-2(type="button")
                                 i.fas.fa-sync-alt
-                                span Reset
-                            
-                        
+                                span Reset                    
+                    
+                    #custom-fields-tab.tab-pane
+                        datalist#fieldList l
+                        .mb-3
+                            p 
+                            | Custom fields are fields created by your organisation. 
+                            br
+                            | Currently only displaying fields that allow free text entry.
+                        .row
+                            .col-5
+                                label(for="tbxCustomField") All available fields
+                            .col-3
+                                label(for="selectCustomField") Customised fields
+                            .col-3
+                                label(for="selectCustomFieldOptions") Options
+                        .row
+                            .col-3.mb-3
+                                input#tbxCustomField.form-select(type="text" list="fieldList")
+
+                            .col-2.mb-3
+                                button#btnRemoveCustomField.btn.btn-light <
+                                button#btnAddCustomField.btn.btn-light >
+
+                            .col-3.mb-3 
+                                select#selectCustomField.form-select
+                            .col-3.mb-3 
+                                select#selectCustomFieldOptions.form-select
+                                    option(value="prepend") Prepend
+                                    option(value="replace") Replace
+                                    option(value="append") Append
+                        .row
+                            .col-11
+                                textarea#custom-field-template.form-control(name="custom-fieldtemplate", rows="30")
+                                .form-text
+                                    p Available tokens: <code>[assignee]</code>, <code>[prLink]</code>
+                        .input-group-btn
+                            button#btnSaveCustomFields.btn.btn-success.col-2(type="button")
+                                i.fas.fa-save 
+                                span Save
+                                
                     
                     #add-new-repo-tab.tab-pane
                         .mb-3
@@ -122,6 +173,7 @@ html(lang='en')
                 
         script
             | CKEDITOR.replace('jira-comment-template');
+            | CKEDITOR.replace('custom-field-template');
             | CKEDITOR.config.height = 280;
         script(src="../js/bootstrap.bundle.min.js")
         script(src="../js/preferences.js")

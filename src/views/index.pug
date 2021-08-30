@@ -58,7 +58,7 @@ html(lang='en')
                         input#tbxJiraUser.form-control(type="text", name="tbxJiraUser" list="jiraUsers")
                     .form-row
                         .col.form-group
-                            label(for="selectJiraGroup") Visible to 
+                            label(for="selectJiraGroup") Visibility/Field
                             select#selectJiraGroup.custom-select(type="text", name="selectJiraGroup")
                         .col.form-group
                             label(for="tbxTimelog") Time logged
@@ -76,11 +76,11 @@ html(lang='en')
                         .col
                             .custom-control.custom-switch.mt-2
                                 input#cbxPRCreated.custom-control-input(type="checkbox", name="cbxPRCreated" disabled)
-                                label.custom-control-label(for="cbxPRCreated") PR created
+                                label.custom-control-label(for="cbxPRCreated") Github
                         .col
                             .custom-control.custom-switch.mt-2
                                 input#cbxCommentCreated.custom-control-input(type="checkbox", name="cbxCommentCreated" disabled)
-                                label.custom-control-label(for="cbxCommentCreated") Jira comment
+                                label.custom-control-label(for="cbxCommentCreated") Jira
 
 
         script

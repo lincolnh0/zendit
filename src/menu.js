@@ -1,8 +1,6 @@
 const { app, BrowserWindow, Menu, shell } = require('electron');
 const path = require('path');
 
-const mainProcess = require('./main');
-
 const template = [
     {
         label: 'File',
@@ -13,8 +11,7 @@ const template = [
             click(item, focusedWindow) {
                 const settingsWindow = new BrowserWindow({
                     width: 1000, 
-                    height: 650,
-                    alwaysOnTop: true,
+                    height: 750,
                     autoHideMenuBar: true,
                     skipTaskbar: true,
                     parent: focusedWindow,
@@ -27,8 +24,12 @@ const template = [
                     }
                 });
                 settingsWindow.loadFile(path.join(__dirname, '../dist/views/preferences.html'))
+                settingsWindow.on('close', () => {
+                  focusedWindow.reload();
+                })
                 settingsWindow.once('ready-to-show', () => {
                   settingsWindow.show()
+                  // settingsWindow.toggleDevTools();
                 })
             }
           },

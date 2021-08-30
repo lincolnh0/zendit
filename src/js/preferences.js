@@ -21,7 +21,13 @@ function add_event_listeners_to_form() {
     btnSelectDirectory.addEventListener('click', () => {window.zendit.send('select-directory')})
 
 
-    selectRepository.addEventListener('change', (e) => update_templates())
+    selectRepository.addEventListener('change', (e) => update_repo_information())
+    btnRemoveRepository.addEventListener('click', (e) => remove_repository())
+
+    btnAddCustomField.addEventListener('click', (e) => add_custom_field(e))
+    btnRemoveCustomField.addEventListener('click', (e) => remove_custom_field(e))
+    selectCustomField.addEventListener('change', (e) => update_custom_field(e))
+    btnSaveCustomFields.addEventListener('click', (e) => save_custom_field(e))
 
     window.zendit.send('get-settings', { repo: 'globals', init: true });
 }
@@ -58,17 +64,22 @@ function save_templates(e) {
         buttonNode = e.target.parentNode;
     }
     buttonNode.disabled = true;
+
     const configObject = {
         repo: selectRepository.value,
         config: {
+            directory: document.getElementById('tbxEditDirectory').value,
+            reviewer: document.getElementById('tbxRepoReviewer').value,
             prTemplate: document.getElementById('pr-template').value,
             commentTemplate: CKEDITOR.instances['jira-comment-template'].getData(),
-            branchRegex: tbxBranchRegex.value
         },
         trigger: buttonNode.id,
         force_overwrite: false,
     }
 
+    if (loadedConfigs[selectRepository.value].alias !== tbxEditRepoAlias.value) {        
+        configObject.config.alias = tbxEditRepoAlias.value;
+    }
     
     window.zendit.send('save-settings', configObject);
 
@@ -85,7 +96,7 @@ function reset_templates(e) {
     }
     delete loadedConfigs[selectRepository.value].prTemplate
     delete loadedConfigs[selectRepository.value].commentTemplate
-    delete loadedConfigs[selectRepository.value].tbxBranchRegex
+    delete loadedConfigs[selectRepository.value].reviewer
     buttonNode.disabled = true;
     const configObject = {
         repo: selectRepository.value,
@@ -151,26 +162,125 @@ function toggle_token_fields(e, id) {
 }
 
 // Show selected repo's template
-function update_templates() {
-    if ('branchRegex' in loadedConfigs[selectRepository.value]) {
-        // tbxBranchRegex.value = loadedConfigs[selectRepository.value].branchRegex;
+function update_repo_information() {
+
+    // Disables delete button is global is selected.
+    btnRemoveRepository.disabled = selectRepository.value === 'globals';
+
+    if (selectRepository.value !== 'globals') {
+        if ('alias' in loadedConfigs[selectRepository.value]) {
+            document.getElementById('tbxEditRepoAlias').value = loadedConfigs[selectRepository.value].alias;
+        }
+    
+        if ('directory' in loadedConfigs[selectRepository.value]) {
+            document.getElementById('tbxEditDirectory').value = loadedConfigs[selectRepository.value].directory;
+        }
+
+        while (githubUsers.firstChild) {
+            githubUsers.removeChild(githubUsers.lastChild)
+            tbxRepoReviewer.value = ''
+        }
+    
+        window.zendit.send("get-github-users", {
+            githubToken: loadedConfigs.globals.githubToken,
+            owner: loadedConfigs[selectRepository.value].owner,
+        })
     }
     else {
-        // tbxBranchRegex.value = loadedConfigs.globals.branchRegex;
+        tbxEditDirectory.value = '';
+        
     }
+
+    tbxRepoReviewer.disabled = selectRepository.value === 'globals';
+    tbxEditRepoAlias.disabled = selectRepository.value === 'globals';
+    tbxEditDirectory.disabled = selectRepository.value === 'globals';
+
+    if ('reviewer' in loadedConfigs[selectRepository.value]) {
+        document.getElementById('tbxRepoReviewer').value = loadedConfigs[selectRepository.value].reviewer;
+    }
+
     if ('prTemplate' in loadedConfigs[selectRepository.value]) {
         document.getElementById('pr-template').value = loadedConfigs[selectRepository.value].prTemplate;
     }
     else {
         document.getElementById('pr-template').value = loadedConfigs.globals.prTemplate;
     }
+
     if ('commentTemplate' in loadedConfigs[selectRepository.value]) {
         CKEDITOR.instances['jira-comment-template'].setData(loadedConfigs[selectRepository.value].commentTemplate);
     }
     else {
         CKEDITOR.instances['jira-comment-template'].setData(loadedConfigs.globals.commentTemplate);
+    }
 
-    }  
+
+}
+
+// Allows user to remove existing repository.
+function remove_repository() {
+    window.zendit.send('remove-repository', selectRepository.value);
+}
+
+function add_custom_field(e) {
+    const fieldLabel = tbxCustomField.value;
+    const customField = document.querySelector('option[value="' + fieldLabel + '"]');
+    customField.parentNode.removeChild(customField);
+    selectCustomField.appendChild(customField);
+    tbxCustomField.value = '';
+    if (selectCustomField.childNodes.length == 1) {
+        update_custom_field();
+    }
+}
+
+function remove_custom_field(e) {
+    const selectedCustomField = selectCustomField.options[selectCustomField.selectedIndex];
+    delete loadedConfigs.globals.fields[selectedCustomField.dataset.id];
+    selectedCustomField.parentNode.removeChild(selectedCustomField);
+    fieldList.appendChild(selectedCustomField);
+
+}
+
+function save_custom_field(e) {
+    if (selectCustomField.children.length < 1) {
+        return;
+    }
+    let buttonNode = e.target;
+    if (e.target.nodeName == 'I' || e.target.nodeName == 'SPAN') {
+        buttonNode = e.target.parentNode;
+    }
+    buttonNode.disabled = true;
+
+    const selectedCustomField = selectCustomField.options[selectCustomField.selectedIndex];
+    const combinedFieldsConfig = Object.assign(loadedConfigs.globals.fields, { 
+        [selectedCustomField.dataset.id]: {
+            name: selectedCustomField.value,
+            content:  CKEDITOR.instances['custom-field-template'].getData(),
+            option: selectCustomFieldOptions.value,
+        }
+    })
+    const configObject = {
+        repo: 'globals',
+        config: {
+            fields: combinedFieldsConfig
+            
+        },
+        force_overwrite: false,
+        trigger: buttonNode.id,
+    }
+
+    window.zendit.send('save-settings', configObject);
+}
+
+// Load template for current custom field
+function update_custom_field(e) {
+    const selectedCustomField = selectCustomField.options[selectCustomField.selectedIndex];
+    if (selectedCustomField.dataset.id in loadedConfigs.globals.fields) {
+        CKEDITOR.instances['custom-field-template'].setData(loadedConfigs.globals.fields[selectedCustomField.dataset.id].content);
+        selectCustomFieldOptions.value = loadedConfigs.globals.fields[selectedCustomField.dataset.id].option;
+    } else {
+        CKEDITOR.instances['custom-field-template'].setData('')
+    }
+    
 }
 
 // Populate fields with retrieved settings
@@ -181,6 +291,13 @@ window.zendit.receive('settings-got', (data) => {
         document.getElementById('jira-api-token').value = data.config.jiraToken;
         document.getElementById('jira-email').value = data.config.jiraEmail;
         data.config.alias = 'Global'
+
+        // Get custom fields from Jira org using retrieved credntials.
+        window.zendit.send('get-fields', {
+            jiraDomain: data.config.jiraDomain,
+            jiraToken: data.config.jiraToken,
+            jiraEmail: data.config.jiraEmail,
+        });
     }
 
     if (data.repo in loadedConfigs == false) {
@@ -191,7 +308,7 @@ window.zendit.receive('settings-got', (data) => {
 
     }
     loadedConfigs[data.repo] = data.config
-    update_templates()
+    update_repo_information()
 
 })
 
@@ -231,4 +348,39 @@ window.zendit.receive('directory-selected', (data) => {
     }
     btnAddRepo.disabled = !data.eligible;
     
+})
+
+window.zendit.receive('reload', () => {
+    delete loadedConfigs[selectRepository.value];
+    location.reload();
+})
+
+window.zendit.receive('fields-got', (fields) => {
+    if (selectCustomField.childNodes.length === 0 || fieldList.childNodes.length === 0) {
+        fields.forEach(field => {
+            if (field.custom === true && field.schema.type == 'string') {
+                const newFieldOption = document.createElement('option');
+                newFieldOption.value = field.name;
+                newFieldOption.innerHTML = field.name
+                newFieldOption.dataset.id = field.id;
+                if (field.id in loadedConfigs.globals.fields) {
+                    selectCustomField.appendChild(newFieldOption);
+                    update_custom_field()
+                } else {
+                    fieldList.appendChild(newFieldOption);
+                }
+            }
+        })
+    }
+})
+
+window.zendit.receive('github-users-got', (data) => {
+    while (githubUsers.firstChild) {
+        githubUsers.removeChild(githubUsers.lastChild)
+    }
+    data.data.forEach((user) => {
+        githubUserOption = document.createElement('option');
+        githubUserOption.value = user.login;
+        githubUsers.appendChild(githubUserOption)
+    })
 })

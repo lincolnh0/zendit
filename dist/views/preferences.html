@@ -11,7 +11,7 @@
   <body>
     <div class="container mt-4">
       <div class="row">
-        <nav class="nav nav-pills flex-column col-3"><a class="nav-link active" data-bs-target="#account-tab" data-bs-toggle="pill"><i class="fas fa-users"></i><span>Accounts</span></a><a class="nav-link" data-bs-target="#templates-tab" data-bs-toggle="pill"> <i class="fas fa-code"></i><span>Templates</span></a><a class="nav-link" data-bs-target="#add-new-repo-tab" data-bs-toggle="pill"> <i class="fas fa-plus-circle"></i><span>New repo</span></a></nav>
+        <nav class="nav nav-pills flex-column col-3"><a class="nav-link active" data-bs-target="#account-tab" data-bs-toggle="pill"><i class="fas fa-users"></i><span>Accounts</span></a><a class="nav-link" data-bs-target="#templates-tab" data-bs-toggle="pill"> <i class="fas fa-paste"></i><span>Repositories</span></a><a class="nav-link" data-bs-target="#custom-fields-tab" data-bs-toggle="pill"><i class="fas fa-pen"></i><span>Custom fields</span></a><a class="nav-link" data-bs-target="#add-new-repo-tab" data-bs-toggle="pill"> <i class="fas fa-plus-circle"></i><span>New repo</span></a></nav>
         <div class="tab-content col-9">
           <form></form>
           <div class="tab-pane show active" id="account-tab">
@@ -19,16 +19,13 @@
               <label class="form-label" for="github-api-token">Github API token</label>
               <div class="input-group">
                 <input class="form-control" id="github-api-token" type="password" name="github-api-token" placeholder="Github API token">
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary btn-light" id="btnShowGithub" data-target="github-api-token"><i class="fas fa-eye"></i></button>
-                </div>
+                <button class="btn btn-outline-secondary btn-light" id="btnShowGithub" data-target="github-api-token"><i class="fas fa-eye"></i></button>
               </div>
             </div>
             <div class="row">
               <div class="col mb-3">
                 <label class="form-label" for="jira-domain">Jira domain</label>
-                <div class="input-group">   
-                  <div class="input-group-prepend"><span class="input-group-text">https://</span></div>
+                <div class="input-group">   <span class="input-group-text">https://</span>
                   <input class="form-control" id="jira-domain" type="text" name="jira-domain" placeholder="Jira domain" required>
                 </div>
               </div>
@@ -39,29 +36,40 @@
                 </div>
               </div>
             </div>
-            <div class="mb-5">
+            <div class="mb-3">
               <label class="form-label" for="jira-api-token">Jira API token</label>
               <div class="input-group">
                 <input class="form-control" id="jira-api-token" type="password" name="jira-api-token" placeholder="Jira API token">
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary btn-light" id="btnShowJira" data-target="jira-api-token"> <i class="fas fa-eye"></i></button>
-                </div>
+                <button class="btn btn-outline-secondary btn-light" id="btnShowJira" data-target="jira-api-token"> <i class="fas fa-eye"></i></button>
               </div>
             </div>
             <button class="btn btn-success col-2" id="btnSaveAccount" type="button"><i class="fas fa-save"> </i><span>Save</span></button>
           </div>
           <div class="tab-pane" id="templates-tab">
+            <datalist id="githubUsers"></datalist>
             <div class="row">
               <div class="col-6 mb-3">
                 <label class="form-label" for="selectRepository">Repository</label>
                 <div class="input-group">
                   <select class="form-select" id="selectRepository"></select>
-                  <button class="btn btn-outline-secondary btn-danger" id="btnRemoveRepository"><i class="fas fa-trash-alt"></i></button>
+                  <button class="btn btn-outline-secondary btn-danger" id="btnRemoveRepository"><i class="fas fa-trash-alt">                                        </i></button>
                 </div>
               </div>
               <div class="col-6 mb-3">
-                <label class="form-label" for="tbxBranchRegex">Branch-ticket regex</label>
-                <input class="form-control" id="tbxBranchRegex" type="text" name="tbxBranchRegex" disabled placeholder="Coming soon">
+                <label class="form-label" for="tbxRepoReviewer">Reviewer</label>
+                <input class="form-select" id="tbxRepoReviewer" type="text" name="tbxRepoReviewer" list="githubUsers">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label" for="tbxEditRepoAlias">Alias</label>
+                <div class="input-group">
+                  <input class="form-control" id="tbxEditRepoAlias" type="text" name="tbxEditRepoAlias">
+                </div>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label" for="tbxEditDirectory">Directory</label>
+                <input class="form-control" id="tbxEditDirectory" type="text" name="tbxEditDirectory">
               </div>
             </div>
             <div class="row">
@@ -69,12 +77,12 @@
                 <label for="pr-template">Pull request template</label>
                 <textarea class="form-control" id="pr-template" name="pr-template" rows="13"></textarea>
                 <div class="form-text">
-                  <p>Available tokens: <code>[ticketNo]</code></p>
+                  <p>Available tokens: <code>[ticketNo]</code>, <code>[jiraDomain]</code></p>
                 </div>
               </div>
               <div class="col mb-3">
                 <label for="jira-comment-template">Jira comment template</label>
-                <textarea class="form-control" id="jira-comment-template" name="pr=template" rows="30"></textarea>
+                <textarea class="form-control" id="jira-comment-template" name="jira-template" rows="30"></textarea>
                 <div class="form-text">
                   <p>Available tokens: <code>[assignee]</code>, <code>[prLink]</code></p>
                 </div>
@@ -82,7 +90,54 @@
             </div>
             <div class="input-group-btn">
               <button class="btn btn-success col-2" id="btnSaveTemplate" type="button"><i class="fas fa-save"> </i><span>Save</span></button>
-              <button class="btn btn-light col-2" id="btnResetTemplate" type="button"><i class="fas fa-sync-alt"></i><span>Reset</span></button>
+              <button class="btn btn-light col-2" id="btnResetTemplate" type="button"><i class="fas fa-sync-alt"></i><span>Reset                    </span></button>
+            </div>
+          </div>
+          <div class="tab-pane" id="custom-fields-tab">
+            <datalist id="fieldList">l</datalist>
+            <div class="mb-3">
+              <p> </p>Custom fields are fields created by your organisation. <br>Currently only displaying fields that allow free text entry.
+            </div>
+            <div class="row">
+              <div class="col-5">
+                <label for="tbxCustomField">All available fields</label>
+              </div>
+              <div class="col-3">
+                <label for="selectCustomField">Customised fields</label>
+              </div>
+              <div class="col-3">
+                <label for="selectCustomFieldOptions">Options</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-3 mb-3">
+                <input class="form-select" id="tbxCustomField" type="text" list="fieldList">
+              </div>
+              <div class="col-2 mb-3">
+                <button class="btn btn-light" id="btnRemoveCustomField"><</button>
+                <button class="btn btn-light" id="btnAddCustomField">></button>
+              </div>
+              <div class="col-3 mb-3"> 
+                <select class="form-select" id="selectCustomField"></select>
+              </div>
+              <div class="col-3 mb-3"> 
+                <select class="form-select" id="selectCustomFieldOptions">
+                  <option value="prepend">Prepend</option>
+                  <option value="replace">Replace</option>
+                  <option value="append">Append</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-11">
+                <textarea class="form-control" id="custom-field-template" name="custom-fieldtemplate" rows="30"></textarea>
+                <div class="form-text">
+                  <p>Available tokens: <code>[assignee]</code>, <code>[prLink]</code></p>
+                </div>
+              </div>
+            </div>
+            <div class="input-group-btn">
+              <button class="btn btn-success col-2" id="btnSaveCustomFields" type="button"><i class="fas fa-save"> </i><span>Save</span></button>
             </div>
           </div>
           <div class="tab-pane" id="add-new-repo-tab">
@@ -114,6 +169,7 @@
     </div>
     <script>
       CKEDITOR.replace('jira-comment-template');
+      CKEDITOR.replace('custom-field-template');
       CKEDITOR.config.height = 280;
     </script>
     <script src="../js/bootstrap.bundle.min.js"></script>
