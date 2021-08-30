@@ -94,31 +94,41 @@
           </div>
           <div class="tab-pane" id="custom-fields-tab">
             <datalist id="fieldList">l</datalist>
-            <div class="mb-5">
-              <p> </p>Custom fields are fields created by your organisation. <br>Tokens are only supported on the paragraph field types.
+            <div class="mb-3">
+              <p> </p>Custom fields are fields created by your organisation. <br>Currently only displaying fields that allow free text entry.
             </div>
             <div class="row">
-              <div class="col-6">
-                <p>All available fields</p>
+              <div class="col-5">
+                <label for="tbxCustomField">All available fields</label>
               </div>
-              <div class="col-6">
-                <p>Customised fields</p>
+              <div class="col-3">
+                <label for="selectCustomField">Customised fields</label>
+              </div>
+              <div class="col-3">
+                <label for="selectCustomFieldOptions">Options</label>
               </div>
             </div>
             <div class="row">
-              <div class="col-4 mb-3">
+              <div class="col-3 mb-3">
                 <input class="form-select" id="tbxCustomField" type="text" list="fieldList">
               </div>
               <div class="col-2 mb-3">
                 <button class="btn btn-light" id="btnRemoveCustomField"><</button>
                 <button class="btn btn-light" id="btnAddCustomField">></button>
               </div>
-              <div class="col-4 mb-3"> 
+              <div class="col-3 mb-3"> 
                 <select class="form-select" id="selectCustomField"></select>
+              </div>
+              <div class="col-3 mb-3"> 
+                <select class="form-select" id="selectCustomFieldOptions">
+                  <option value="prepend">Prepend</option>
+                  <option value="replace">Replace</option>
+                  <option value="append">Append</option>
+                </select>
               </div>
             </div>
             <div class="row">
-              <div class="col-10">
+              <div class="col-11">
                 <textarea class="form-control" id="custom-field-template" name="custom-fieldtemplate" rows="30"></textarea>
                 <div class="form-text">
                   <p>Available tokens: <code>[assignee]</code>, <code>[prLink]</code></p>
@@ -158,7 +168,6 @@
     </div>
     <script>
       CKEDITOR.replace('jira-comment-template');
-      CKEDITOR.config.height = 280;
       CKEDITOR.replace('custom-field-template');
       CKEDITOR.config.height = 280;
     </script>
