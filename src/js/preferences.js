@@ -363,7 +363,7 @@ window.zendit.receive('fields-got', (fields) => {
                 newFieldOption.value = field.name;
                 newFieldOption.innerHTML = field.name
                 newFieldOption.dataset.id = field.id;
-                if (field.id in loadedConfigs.globals.fields) {
+                if (fields in loadedConfigs.globals && field.id in loadedConfigs.globals.fields) {
                     selectCustomField.appendChild(newFieldOption);
                     update_custom_field()
                 } else {
