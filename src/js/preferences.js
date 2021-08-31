@@ -290,6 +290,10 @@ window.zendit.receive('settings-got', (data) => {
         document.getElementById('jira-domain').value = data.config.jiraDomain;
         document.getElementById('jira-api-token').value = data.config.jiraToken;
         document.getElementById('jira-email').value = data.config.jiraEmail;
+
+        if (!('fields' in data.config)) {
+            data.config.fields = {}
+        }
         data.config.alias = 'Global'
 
         // Get custom fields from Jira org using retrieved credntials.
@@ -363,7 +367,7 @@ window.zendit.receive('fields-got', (fields) => {
                 newFieldOption.value = field.name;
                 newFieldOption.innerHTML = field.name
                 newFieldOption.dataset.id = field.id;
-                if (fields in loadedConfigs.globals && field.id in loadedConfigs.globals.fields) {
+                if (field.id in loadedConfigs.globals.fields) {
                     selectCustomField.appendChild(newFieldOption);
                     update_custom_field()
                 } else {
