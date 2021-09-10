@@ -9,7 +9,7 @@ function ready(fn) {
 
 function add_event_listeners_to_form() {
     // Add form related event listeners.
-    btnRefreshRepos.addEventListener('click', () => populate_repositories())
+    btnRefreshRepos.addEventListener('click', () => {location.reload()})
 
     selectRepository.addEventListener('change', (e) => populate_branches())
     selectJiraGroup.addEventListener('change', (e) => change_comment_template())
@@ -113,7 +113,7 @@ function autofill_title() {
     // For branch naming format ISSUE-KEY/branch-name
 
     branchList.childNodes.forEach((element) => {
-        if (tbxHeadBranch.value == element.value) {
+        if (tbxHeadBranch.value == element.value && tbxHeadBranch.value.indexOf('/') !== -1) {
             const issueKey = tbxHeadBranch.value.split('/')[0];
             const branchName = tbxHeadBranch.value.split('/')[1];
             tbxPRTitle.value = issueKey + ': ' + branchName.replaceAll('-', ' ');
