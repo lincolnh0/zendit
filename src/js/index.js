@@ -113,7 +113,7 @@ function autofill_title() {
     // For branch naming format ISSUE-KEY/branch-name
 
     branchList.childNodes.forEach((element) => {
-        if (tbxHeadBranch.value == element.value && tbxHeadBranch.value.indexOf('/') !== -1) {
+        if (tbxHeadBranch.value == element.value) {
             const issueKey = tbxHeadBranch.value.split('/')[0];
             const branchName = tbxHeadBranch.value.split('/')[1];
             tbxPRTitle.value = issueKey + ': ' + branchName.replaceAll('-', ' ');
@@ -251,8 +251,9 @@ function free_submit_buttons() {
 
 // Populate branch data list.
 window.zendit.receive('branches-got', (data) => {
-    branchList.innerHTML = '';
-
+    while (branchList.firstChild) {
+        branchList.removeChild(branchList.lastChild)
+    }
     let branches = data.branches.filter((elem) => { if (elem != '') return elem; })
     branches.forEach(element => {
         branchName = element.split(' ').pop();
@@ -271,6 +272,7 @@ window.zendit.receive('branches-got', (data) => {
 
 // Populate fields with retrieved settings
 window.zendit.receive('settings-got', (data) => {
+    let ready_to_populate = false;
     // Store global config.
     if (data.repo == 'globals') {
         data.config.alias = 'Global'
@@ -288,16 +290,18 @@ window.zendit.receive('settings-got', (data) => {
             selectRepository.appendChild(newRepoOption)
             if (loadedConfigs['globals'].lastRepo == data.repo) {
                 newRepoOption.selected = true;
+                ready_to_populate = true;
             }
             if (data.default == true) {
                 newRepoOption.selected = true;
+                ready_to_populate = true;
             }
         }
         loadedConfigs[data.repo] = data.config;
     }
     
     // The initial setting to arrive is globals, so dropdown will still be empty.
-    if (selectRepository.childNodes.length > 0) {
+    if (ready_to_populate) {
         populate_branches()
     }
 
@@ -361,7 +365,7 @@ window.zendit.receive('jira-comment-created', (data) => {
 // On jira users list fetched.
 window.zendit.receive('jira-users-got', (data) => {
     while (jiraUsers.firstChild) {
-        jiraUsers.removeChild(githubUsers.lastChild)
+        jiraUsers.removeChild(jiraUsers.lastChild)
     }
     for (const index in data.users) {
         jiraUserOption = document.createElement('option');
