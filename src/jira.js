@@ -167,7 +167,10 @@ ipcMain.on('create-jira-comment', async (event, arg) => {
     const requestResponse = await call_jira_api(requestObject);
     const requestBody = await requestResponse.text();
     const issueField = JSON.parse(requestBody).fields[arg.visibility]
-    const originalFieldContent = issueField.content
+    let originalFieldContent = [];
+    if (issueField !== null) {
+      originalFieldContent = issueField.content
+    }
 
     const commentJSON = JSON.parse(comment)
 
