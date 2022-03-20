@@ -4,11 +4,12 @@ const yaml = require('js-yaml');
 const { exec } = require('child_process')
 
 ipcMain.on('select-directory', async (event, arg) => {
-    
-    const result = await dialog.showOpenDialog(win, {
-        properties: ['openDirectory'],
-        defaultPath: app.getPath('home'),
-    })
+
+    const browserWindow = BrowserWindow.fromWebContents(event.sender);
+    const result = await dialog.showOpenDialog(browserWindow, {
+        properties: ["openDirectory"],
+        defaultPath: app.getPath("home"),
+    });
 
     const responseObj = {
         filepath: result.filePaths,
