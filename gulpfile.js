@@ -1,8 +1,8 @@
 'use strict';
 
-var gulp = require('gulp');
-var pug = require('gulp-pug');
-var sass = require ('gulp-sass');
+const gulp = require('gulp');
+const pug = require('gulp-pug');
+const sass = require ('gulp-sass');
 const cleanCSS = require('gulp-clean-css');
 const terser = require('gulp-terser');
 const imagemin = require('gulp-imagemin');

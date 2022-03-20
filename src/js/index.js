@@ -85,6 +85,7 @@ function populate_jira_users() {
         jiraDomain: loadedConfigs['globals'].jiraDomain,
         jiraToken: loadedConfigs['globals'].jiraToken,
         jiraEmail: loadedConfigs['globals'].jiraEmail,
+        ticketNo: regex_branch_to_ticket(tbxHeadBranch.value),
     })
 }
 
@@ -117,6 +118,7 @@ function autofill_title() {
             const issueKey = tbxHeadBranch.value.split('/')[0];
             const branchName = tbxHeadBranch.value.split('/')[1];
             tbxPRTitle.value = issueKey + ': ' + branchName.replaceAll('-', ' ');
+            populate_jira_users();
         }
     })
 

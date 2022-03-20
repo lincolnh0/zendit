@@ -240,21 +240,16 @@ ipcMain.on('get-jira-users', async (event, arg) => {
   
 
   const requestObject = {
-    requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/users/search?maxResults=2000',
+    requestURL: 'https://' + arg.jiraDomain + '/rest/api/3/user/assignable/search?issueKey=' + arg.ticketNo,
     jiraEmail: arg.jiraEmail,
     jiraToken: arg.jiraToken,
     requestMethod: 'GET',
   }
 
-  const apiResonse  =  await call_jira_api(requestObject)
-  const respoonseBody = await apiResonse.text()
+  const apiResponse  =  await call_jira_api(requestObject)
+  const responseBody = JSON.parse(await apiResponse.text())
   await win.webContents.send('jira-users-got', {
-        users: JSON.parse(respoonseBody)
-          .filter((element) => {
-            if (element.active) {
-              return element;
-            }
-          })
+        users: responseBody
           .map((element) => {
             return {
               id: element.accountId,
