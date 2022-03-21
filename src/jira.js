@@ -248,8 +248,9 @@ ipcMain.on('get-jira-users', async (event, arg) => {
 
   const apiResponse  =  await call_jira_api(requestObject)
   const responseBody = JSON.parse(await apiResponse.text())
+  
   await win.webContents.send('jira-users-got', {
-        users: responseBody
+        users: Array.from(responseBody)
           .map((element) => {
             return {
               id: element.accountId,
